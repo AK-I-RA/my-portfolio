@@ -1,90 +1,177 @@
-/* General */
+/* ===== Reset & Base ===== */
 * {
   margin: 0;
   padding: 0;
   box-sizing: border-box;
 }
+
 body {
-  font-family: 'Poppins', sans-serif;
+  font-family: 'Montserrat', sans-serif;
+  background: #f5f5f1;
+  color: #222;
   line-height: 1.6;
-  background: #f9f9f9;
-  color: #333;
+  padding: 20px;
+  animation: fadeIn 1s ease-in;
 }
 
-/* Navbar */
-header {
-  background: #111;
-  color: white;
-  padding: 1rem 2rem;
+/* ===== Animations ===== */
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(20px); }
+  to { opacity: 1; transform: translateY(0); }
 }
-nav {
+
+@keyframes slideUp {
+  from { opacity: 0; transform: translateY(30px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+/* ===== Navbar ===== */
+.navbar {
   display: flex;
   justify-content: space-between;
   align-items: center;
-}
-.nav-links {
-  list-style: none;
-  display: flex;
-  gap: 1.5rem;
-}
-.nav-links a {
-  text-decoration: none;
-  color: white;
-  transition: 0.3s;
-}
-.nav-links a:hover {
-  color: #00adb5;
+  font-size: 14px;
+  margin-bottom: 40px;
+  animation: slideUp 0.8s ease-out;
 }
 
-/* Hero */
+.role {
+  font-weight: 600;
+  color: #444;
+}
+
+.navbar nav a {
+  margin-left: 20px;
+  text-decoration: none;
+  color: #555;
+  transition: color 0.3s ease;
+}
+
+.navbar nav a:hover {
+  color: black;
+}
+
+/* ===== Hero Section ===== */
+
 .hero {
-  height: 100vh;
+  width: 100%;
+  display: flexbox;
+  text-align: center; /* centers horizontally */
+  margin-top: 10px;   /* pushes it down a little from the top */
+}
+
+.hero h1 {
+  font-size: 11vw; /* scales with screen width */
+  font-weight: 700; /* extra bold */
+  text-transform: uppercase;
+  margin: 0;
+  line-height: 1;
+  color: #111; /* near black */
+}
+
+.hero-title {
+  font-size: 80px;
+  font-weight: 900;
+  letter-spacing: -2px;
+  margin-bottom: 20px;
+  animation: fadeIn 1s ease-in-out;
+}
+
+.hero-content {
   display: flex;
-  justify-content: center;
-  align-items: center;
-  text-align: center;
-  background: linear-gradient(to right, #00adb5, #393e46);
-  color: white;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 40px;
+  animation: fadeIn 1.2s ease-in-out;
 }
-.hero h2 span {
-  color: #ffd369;
+
+/* Intro Text */
+.intro {
+  flex: 1;
+  max-width: 350px;
+  font-size: 16px;
+  color: #444;
+  animation: slideUp 1.4s ease-out;
 }
-.btn {
+
+.contact-btn {
   display: inline-block;
-  margin-top: 1rem;
-  padding: 0.7rem 1.5rem;
-  background: #ffd369;
-  color: #111;
-  border-radius: 5px;
-  text-decoration: none;
-  transition: 0.3s;
-}
-.btn:hover {
-  background: #ffbb00;
-}
-
-/* Sections */
-section {
-  padding: 4rem 2rem;
-  text-align: center;
-}
-.projects .project-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-  gap: 1.5rem;
-  margin-top: 2rem;
-}
-.project-card {
-  background: white;
-  padding: 1.5rem;
-  border-radius: 10px;
-  box-shadow: 0 4px 10px rgba(0,0,0,0.1);
-}
-
-/* Footer */
-footer {
-  text-align: center;
-  padding: 1.5rem;
+  margin-top: 20px;
+  padding: 12px 24px;
+  border-radius: 50px;
   background: #111;
   color: white;
+  text-decoration: none;
+  font-weight: bold;
+  transition: background 0.3s ease, transform 0.2s ease;
+}
+
+.contact-btn:hover {
+  background: #333;
+  transform: scale(1.05);
+}
+
+/* Photo */
+.photo img {
+  width: 250px;
+  border-radius: 12px;
+  transition: transform 0.4s ease;
+}
+
+.photo img:hover {
+  transform: scale(1.05) rotate(-2deg);
+}
+
+/* Availability */
+.availability {
+  text-align: right;
+  font-size: 14px;
+  animation: slideUp 1.6s ease-out;
+}
+
+.availability h2 {
+  font-size: 48px;
+  font-weight: 900;
+}
+
+/* ===== Responsive Design ===== */
+@media (max-width: 900px) {
+  .hero-title {
+    font-size: 50px;
+    text-align: center;
+  }
+
+  .hero-content {
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+  }
+
+  .intro {
+    max-width: 100%;
+  }
+
+  .photo img {
+    width: 200px;
+    margin: 20px 0;
+  }
+
+  .availability {
+    text-align: center;
+  }
+}
+
+@media (max-width: 500px) {
+  .hero-title {
+    font-size: 36px;
+  }
+
+  .contact-btn {
+    padding: 10px 18px;
+    font-size: 14px;
+  }
+
+  .availability h2 {
+    font-size: 32px;
+  }
 }
