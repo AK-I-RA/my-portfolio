@@ -7,12 +7,12 @@
 
 body {
   margin: 0;
-  font-family:'Trebuchet MS', 'Lucida Sans Unicode', 'Lucida Grande', 'Lucida Sans', Arial, sans-serif;
-  background: #f5f5f1;
+  font-family:'Franklin Gothic Medium', 'Arial Narrow', Arial, sans-serif;
+  background: #f3f1eb;
   color: #222;
   line-height: 1.6;
   padding: 0;
-  animation: fadeIn 1s ease-in;
+  animation: fadeIn 1s ease-in;       
 }
 
 /* ===== Animations ===== */
@@ -67,7 +67,7 @@ body {
 
 .hero h1 {
   font-size: 16vw; /* scales with screen width */
-  font-weight: 1; /* extra bold */
+  font-weight: 0; /* extra bold */
   text-transform: uppercase;
   margin: 0;
   line-height: 1;
@@ -75,8 +75,8 @@ body {
 }
 
 .hero-title {
-  font-size: 80px;
-  font-weight: 900;
+  font-size: 20px;
+  font-weight: 100;
   letter-spacing: -2px;
   margin-bottom: 20px;
   animation: fadeIn 1s ease-in-out;
@@ -89,33 +89,39 @@ body {
   display: flex;
   justify-content: space-between;
   align-items: flex-start;
-  gap: 40px;
+  gap: 400px;
   animation: fadeIn 1.2s ease-in-out;
 }
 
 /* Intro Text */
 .intro {
   flex: 1;
-  max-width: 350px;
+  max-width: 420px;
   animation: slideUp 1.4s ease-out;
-  font-size: 27px;
+  font-size: 29px;
   font-family: 'Trebuchet MS', 'Lucida Sans Unicode', 'Lucida Grande', 'Lucida Sans', Arial, sans-serif;
   color: #444;
   font-weight: 10px;
   line-height: 1.3;
+  text-align: left;
 }
 
 .contact-btn {
   display: inline-block;
-  margin-top: 20px;
-  padding: 12px 24px;
+  margin-top: 50px;
+  padding: 0 30px;              /* only left/right padding */
+  height: 80px;                 /* fixed height */
+  line-height: 80px;            /* centers the text vertically */
   border-radius: 50px;
-  background: #111;
-  color: white;
+  background: #36332f;          /* chocolate brown */
+  color: #fff;
   text-decoration: none;
   font-weight: bold;
+  font-size: 28px;
+  text-align: center;
   transition: background 0.3s ease, transform 0.2s ease;
 }
+
 
 .contact-btn:hover {
   background: #333;
@@ -135,14 +141,28 @@ body {
 
 /* Availability */
 .availability {
-  text-align: right;
-  font-size: 14px;
-  animation: slideUp 1.6s ease-out;
+    position: absolute;
+    bottom: 0px;    /* Adjust this value to change distance from bottom */
+    left: 1100px;     /* Adjust this value to change distance from right */
+    font-size: 19px;
+    animation: slideUp 1.6s ease-out;
 }
 
-.availability h2 {
-  font-size: 48px;
+.availability-text {
+  font-family :Impact, Haettenschweiler, 'Arial Narrow Bold', sans-serif;
+  font-size: 19px;
+  /* You can move this text independently */
+  margin-bottom: -40px; /* Space between text and date */
+  /* Example: move left or right */
+  margin-left: -20px;
+}
+
+.availability-date {
+    color: #36332f;
+  font-size: 100px;
   font-weight: 900;
+  margin-left: 30px;
+  margin-bottom: -40px;
 }
 
 /* ===== Responsive Design ===== */
