@@ -6,11 +6,12 @@
 }
 
 body {
+  margin: 0;
   font-family:'Trebuchet MS', 'Lucida Sans Unicode', 'Lucida Grande', 'Lucida Sans', Arial, sans-serif;
   background: #f5f5f1;
   color: #222;
   line-height: 1.6;
-  padding: 20px;
+  padding: 0;
   animation: fadeIn 1s ease-in;
 }
 
@@ -27,12 +28,14 @@ body {
 
 /* ===== Navbar ===== */
 .navbar {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  font-size: 14px;
-  margin-bottom: 40px;
-  animation: slideUp 0.8s ease-out;
+  position: absolute; 
+  top: 20px;
+  left: 40px;
+  right: 40px;
+  display: flex;               /* enables flexbox */
+  justify-content: space-between; /* pushes items apart */
+  align-items: center;         /* vertically align */
+  z-index: 10;
 }
 
 .role {
@@ -41,7 +44,8 @@ body {
 }
 
 .navbar nav a {
-  margin-left: 20px;
+  margin-right: 20px; /* space between menu items */
+  
   text-decoration: none;
   color: #555;
   transition: color 0.3s ease;
@@ -54,14 +58,15 @@ body {
 /* ===== Hero Section ===== */
 
 .hero {
+  align-items: flex-start; 
   width: 100%;
   display: flexbox;
   text-align: center; /* centers horizontally */
-  margin-top: 10px;   /* pushes it down a little from the top */
+  margin-top: 5px;   /* pushes it down a little from the top */
 }
 
 .hero h1 {
-  font-size: 13vw; /* scales with screen width */
+  font-size: 16vw; /* scales with screen width */
   font-weight: 1; /* extra bold */
   text-transform: uppercase;
   margin: 0;
