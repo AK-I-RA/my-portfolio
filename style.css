@@ -39,6 +39,17 @@ body {
   100% { transform: translateY(0); opacity: 1; }
 }
 
+@keyframes shutterOpen {
+  from {
+    opacity: 1;
+    clip-path: inset(0 0 100% 0);   /* fully closed (only top edge visible) */
+  }
+  to {
+    opacity: 1;
+    clip-path: inset(0 0 0 0);      /* fully revealed */
+  }
+}
+
 /* ===== Navbar ===== */
 .navbar {
   position: absolute; 
@@ -169,6 +180,7 @@ body {
 .photo {
   margin-left: -230px;  /* pushes the photo right */
   margin-top: -150px;    /* pushes it down */
+  overflow: hidden; 
 }
 
 
@@ -177,7 +189,8 @@ body {
   border-radius: 12px;
   transition: transform 0.4s ease;
   opacity: 0;
-  animation: slideDown 1.2s ease forwards;
+  clip-path: inset(0 0 100% 0);   /* completely hidden (from bottom) */
+  animation: shutterOpen 1.5s ease forwards;
   animation-delay: 1.4s;
       
 }
