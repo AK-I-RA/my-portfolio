@@ -1,52 +1,70 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Your Name - Portfolio</title>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Ankit Rawat — Portfolio</title>
   <link rel="stylesheet" href="style.css">
   <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@700;900&display=swap" rel="stylesheet">
-
 </head>
 <body>
-  <!-- Navbar -->
+  <!-- Navbar (unchanged) -->
   <header class="navbar">
     <span class="role">Web Developer & Designer</span>
     <nav>
-      <a href="#">Services</a>
-      <a href="#">Works</a>
-      <a href="#">About</a>
-      <a href="#">Contact</a>
+      <a href="#hero">Home</a>
+      <a href="#services">Services</a>
+      <a href="#about">About</a>
+      <a href="#contact">Contact</a>
     </nav>
   </header>
 
-  <!-- Hero Section -->
-  <section class="hero">
-    <h1 class="hero-title">
-        <span>A</span><span>N</span><span>K</span><span>I</span><span>T</span>
-        <span>R</span><span>A</span><span>W</span><span>A</span><span>T</span>
-    </h1>
-    
-    <div class="hero-content">
-      <div class="intro">
-        <p>
-          Open to job opportunities worldwide. Passionate about building polished, intuitive, 
-          and thoughtful digital experiences that leave a mark.
+  <!-- scroller: isolates full-page scrolling so your hero CSS isn't touched -->
+  <main class="scroller">
+
+    <!-- ===== Hero (unchanged structure, only wrapped) ===== -->
+    <section id="hero" class="hero page">
+      <h1 class="hero-title">
+          <span>A</span><span>N</span><span>K</span><span>I</span><span>T</span>
+          <span>R</span><span>A</span><span>W</span><span>A</span><span>T</span>
+      </h1>
+
+      <div class="hero-content">
+        <div class="intro">
+          <p>
+            Open to job opportunities worldwide. Passionate about building polished, intuitive, 
+            and thoughtful digital experiences that leave a mark.
+          </p>
+          <a href="#contact" class="contact-btn">CONTACT ↗</a>
+        </div>
+
+        <div class="photo">
+          <img src="assets/ankit-photo.webp" alt="Portfolio Photo">
+        </div>
+
+        <div class="availability">
+          <div class="availability-text">AVAILABLE FOR WORK</div>
+          <div class="availability-date">JUN'25</div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ===== NEW: Services (full-screen page below hero) ===== -->
+    <section id="services" class="page second-page">
+      <div class="ankit-next-inner">
+        <h1 class="ankit-next-title">WHAT I DO /</h1>
+        <p class="ankit-next-sub">(SERVICES)</p>
+        <p class="ankit-next-text">
+          I specialize in building full-stack web applications that are fast, reliable, and user-friendly.
+          With a solid foundation in both frontend and backend technologies, I help bring ideas to life —
+          whether it’s for a business, a startup, or a product team.
         </p>
-        <a href="#contact" class="contact-btn">CONTACT ↗</a>
       </div>
+    </section>
 
-      <div class="photo">
-        <img src="assets/ankit-photo.webp" alt="Portfolio Photo">
-      </div>
+    
+  </main>
 
-      <div class="availability">
-        <div class="availability-text">AVAILABLE FOR WORK</div>
-        <div class="availability-date">JUN'25</div>
-      </div>
-    </div>
-  </section>
-  
-
+  <script src="script.js"></script>
 </body>
 </html>
