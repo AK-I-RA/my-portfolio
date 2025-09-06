@@ -255,6 +255,8 @@ body {
 .ankit-next-sub { margin: 6px 0 18px; font-size: 18px; color: rgba(255,255,255,0.7); }
 .ankit-next-text { font-size:20px; line-height:1.6; max-width:760px; color: rgba(255,255,255,0.92); }
 
+
+
 /* ===== Responsive Design ===== */
 @media (max-width: 900px) {
   .hero-title { font-size: 50px; text-align: center; }
