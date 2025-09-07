@@ -275,14 +275,14 @@ body {
   left: 690px;
 }
 .ankit-next-text { 
-  font-size:25px; 
-  line-height:1.6; 
-  max-width:420px; 
+  font-size:27px; 
+  line-height:1.4; 
+  max-width:500px; 
   color: #f3f1eb; 
   position: absolute;   /* take it out of normal flow */
   top: 300px;           /* move down from top */
-  left: 800px;
-  font-family: ui-monospace,SFMono-Regular,Menlo,Monaco,Consolas,Liberation Mono,Courier New,monospace;
+  left: 900px;
+  font-family: 'Trebuchet MS', 'Lucida Sans Unicode', 'Lucida Grande', 'Lucida Sans', Arial, sans-serif;
   text-align: left;
 
   /*flex: 1;
