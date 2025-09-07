@@ -53,3 +53,4 @@ const observer = new IntersectionObserver((entries) => {
 }, { root: scroller, threshold: 0.6 });
 
 pages.forEach(p => observer.observe(p));
+
