@@ -257,8 +257,9 @@ body {
   text-transform: uppercase;
   letter-spacing: -4px;
   position: absolute;   /* take it out of normal flow */
-  top: 50px;           /* move down from top */
+  top: 30px;           /* move down from top */
   left: 50px;
+  color: #c5bcb4;
 }
 .ankit-next-title .slash {
   font-weight: 900;       /* lighter so it matches visual weight */
@@ -271,18 +272,20 @@ body {
   font-size: 18px; 
   color: rgba(255,255,255,0.7); 
   position: absolute;   /* take it out of normal flow */
-  top: 300px;           /* move down from top */
+  top: 270px;           /* move down from top */
   left: 690px;
+  font-family: Arial, Helvetica, sans-serif;
+
 }
 .ankit-next-text { 
-  font-size:27px; 
+  font-size:28px; 
   line-height:1.4; 
-  max-width:500px; 
-  color: #f3f1eb; 
+  max-width:520px; 
+  color: rgba(255,255,255,0.7); 
   position: absolute;   /* take it out of normal flow */
-  top: 300px;           /* move down from top */
+  top: 270px;           /* move down from top */
   left: 900px;
-  font-family: 'Trebuchet MS', 'Lucida Sans Unicode', 'Lucida Grande', 'Lucida Sans', Arial, sans-serif;
+  font-family: Arial, Helvetica, sans-serif;
   text-align: left;
 
   /*flex: 1;
