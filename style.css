@@ -345,24 +345,32 @@ body {
 }
 
 /* Service tech list */
-.service-item ul {
-  list-style: none;
-  padding: 0;
-  margin: 0;
-}
-
-.service-item ul li {
-  font-size: 18px;
-  color: rgba(255,255,255,0.7);
-  margin-bottom: 8px;
-  transition: color 0.3s ease;
+.FSD-Key_points{
+  font-weight: bold;
+  font-size: 37px;
+  line-height: 0.5;
+  color: #aaa9a6;
+  margin-bottom: 20px;
+  max-width: 500px;
   top: 1000px;           /* move down from top */
-  left: 700px;
+  left: 720px;
   position: absolute;
+  font-family: 'Inter', 'Archivo', sans-serif;
+  letter-spacing: -3px;
 }
 
-.service-item ul li:hover {
-  color: #fff;
+.thin-line_01 {
+  width: 100%;
+  border: none;
+  border-top: 1px solid rgba(255,255,255,0.2);
+  margin: 30px auto 40px auto;
+}
+
+.thin-line_02 {
+  width: 100%;
+  border: none;
+  border-top: 1px solid rgba(255,255,255,0.2);
+  margin: 30px auto 40px auto;
 }
 
 /* ===== Responsive Design ===== */
