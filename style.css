@@ -324,7 +324,7 @@ body {
   margin: 10px 0;
   color: #c5bcb4;
   top: 625px;           /* move down from top */
-  left: 700px;
+  left: 650px;
   position: absolute;
   letter-spacing: -4px;
 }
@@ -337,7 +337,7 @@ body {
   margin-bottom: 20px;
   max-width: 500px;
   top: 800px;           /* move down from top */
-  left: 720px;
+  left: 670px;
   position: absolute;
   font-family: 'Inter', 'Archivo', sans-serif;
   letter-spacing: -1px;
@@ -353,21 +353,21 @@ body {
   margin-bottom: 20px;
   max-width: 500px;
   top: 1000px;           /* move down from top */
-  left: 720px;
+  left: 700px;
   position: absolute;
   font-family: 'Inter', 'Archivo', sans-serif;
   letter-spacing: -3px;
 }
 
 .thin-line_01 {
-  width: 100%;
+  width: 170%;
   border: none;
   border-top: 1px solid rgba(255,255,255,0.2);
   margin: 30px auto 40px auto;
 }
 
 .thin-line_02 {
-  width: 100%;
+  width: 170%;
   border: none;
   border-top: 1px solid rgba(255,255,255,0.2);
   margin: 30px auto 40px auto;
