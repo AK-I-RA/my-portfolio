@@ -346,6 +346,7 @@ body {
 
 /* Service tech list */
 .FSD-Key_points{
+  list-style: none;
   font-weight: bold;
   font-size: 37px;
   line-height: 0.5;
@@ -353,10 +354,24 @@ body {
   margin-bottom: 20px;
   max-width: 500px;
   top: 1000px;           /* move down from top */
-  left: 700px;
+  left: 670px;
   position: absolute;
   font-family: 'Inter', 'Archivo', sans-serif;
   letter-spacing: -3px;
+}
+
+.FSD-Key_points li {
+  display: flex;                   /* number + text aligned */
+  align-items: center;
+  margin-bottom: 20px;
+  
+}
+.FSD-Key_points li .number {
+  font-family: "Courier New", monospace; /* clean aligned numbers */
+  font-size: 27px;
+  color: #d3baa4;
+  margin-right: 15px;              /* gap between number and text */
+  min-width: 40px;                 /* keeps numbers aligned vertically */
 }
 
 .thin-line_01 {
@@ -373,6 +388,9 @@ body {
   margin: 30px auto 40px auto;
 }
 
+.FSD-Key_points li:last-child {
+  margin-bottom: 50px; /* adjust value as you like */
+}
 /* ===== Responsive Design ===== */
 @media (max-width: 900px) {
   .hero-title { font-size: 50px; text-align: center; }
