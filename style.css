@@ -368,7 +368,7 @@ body {
 }
 .FSD-Key_points li .number {
   font-family: "Courier New", monospace; /* clean aligned numbers */
-  font-size: 27px;
+  font-size: 20px;
   color: #d3baa4;
   margin-right: 15px;              /* gap between number and text */
   min-width: 40px;                 /* keeps numbers aligned vertically */
@@ -391,6 +391,81 @@ body {
 .FSD-Key_points li:last-child {
   margin-bottom: 50px; /* adjust value as you like */
 }
+
+/* ===== Service Section 02 & 03 (Frontend + Backend) ===== */
+.service-item_02 {
+  max-width: 1000px;
+  margin: 0 auto;
+  text-align: left;
+  color: #fff;
+  padding: 20px;
+}
+
+.service-number_02 {
+  font-size: 70px;
+  font-weight: 900;
+  color: #c5bcb4;
+  margin: 0;
+  line-height: 1;
+  top: 655px;           /* move down from top */
+  left: 90px;
+  position: absolute;
+}
+
+.frontend {
+  font-size: 70px;
+  font-weight: bold;
+  margin: 10px 0;
+  color: #c5bcb4;
+  top: 625px;           /* move down from top */
+  left: 650px;
+  position: absolute;
+  letter-spacing: -4px;
+}
+
+.Define_frontend {
+  font-size: 25px;
+  line-height: 1.4;
+  color: #aaa9a6;
+  margin-bottom: 20px;
+  max-width: 500px;
+  top: 800px;           /* move down from top */
+  left: 670px;
+  position: absolute;
+  font-family: 'Inter', 'Archivo', sans-serif;
+  letter-spacing: -1px;
+}
+
+.Frontend-Key_points {
+  list-style: none;
+  font-weight: bold;
+  font-size: 37px;
+  line-height: 0.5;
+  color: #aaa9a6;
+  margin-bottom: 20px;
+  max-width: 500px;
+  top: 1000px;           /* move down from top */
+  left: 670px;
+  position: absolute;
+  font-family: 'Inter', 'Archivo', sans-serif;
+  letter-spacing: -3px;
+}
+
+.Frontend-Key_points li {
+  display: flex;                   /* number + text aligned */
+  align-items: center;
+  margin-bottom: 20px;
+}
+
+.Frontend-Key_points li .number {
+  font-family: "Courier New", monospace; /* clean aligned numbers */
+  font-size: 20px;
+  color: #d3baa4;
+  margin-right: 15px;              /* gap between number and text */
+  min-width: 40px; 
+}
+
+
 /* ===== Responsive Design ===== */
 @media (max-width: 900px) {
   .hero-title { font-size: 50px; text-align: center; }
