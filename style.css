@@ -12,53 +12,81 @@ body {
   color: #222;
   line-height: 1.6;
   padding: 0;
-  animation: fadeIn 1s ease-in;
+  /* NOTE: removed transform from fade to preserve position:sticky behavior */
+  animation: fadeIn 0.45s ease-in;
 }
 
 /* ===== Animations ===== */
 @keyframes fadeIn {
-  from { opacity: 0; transform: translateY(20px); }
-  to { opacity: 1; transform: translateY(0); }
+  from { opacity: 0; }
+  to   { opacity: 1; }
 }
 
 @keyframes slideUp {
   from { opacity: 0; transform: translateY(30px); }
-  to { opacity: 1; transform: translateY(0); }
+  to   { opacity: 1; transform: translateY(0); }
 }
 
 @keyframes slideDown {
   from { opacity: 0; transform: translateY(-100px); }
-  to { opacity: 1; transform: translateY(0); }
+  to   { opacity: 1; transform: translateY(0); }
 }
 
 /* wave animation */
 @keyframes waveUpDown {
   0%   { transform: translateY(100px); opacity: 0; }
   10%  { transform: translateY(-20px); opacity: 1; }
-  
   100% { transform: translateY(0); opacity: 1; }
 }
 
 @keyframes shutterOpen {
   from {
     opacity: 1;
-    clip-path: inset(0 0 100% 0);   /* fully closed (only top edge visible) */
+    clip-path: inset(0 0 100% 0);
   }
   to {
     opacity: 1;
-    clip-path: inset(0 0 0 0);      /* fully revealed */
+    clip-path: inset(0 0 0 0);
   }
 }
 
 @keyframes riseUp {
   from {
     opacity: 0;
-    transform: translateY(100px);  /* hidden below */
+    transform: translateY(100px);
   }
   to {
     opacity: 1;
-    transform: translateY(0);      /* in place */
+    transform: translateY(0);
   }
+}
+
+/* ===== Page-specific keyframes (custom per page) ===== */
+/* Hero: gentle fade + scale */
+@keyframes heroFade {
+  0% { opacity: 0; transform: scale(0.98) translateY(20px); }
+  60% { opacity: 1; transform: scale(1.01) translateY(-6px); }
+  100% { opacity: 1; transform: scale(1) translateY(0); }
+}
+
+/* Services: slide from right and reveal */
+@keyframes servicesSlide {
+  0% { opacity: 0; transform: translateX(80px) scale(0.99); }
+  60% { opacity: 1; transform: translateX(-8px) scale(1.01); }
+  100% { opacity: 1; transform: translateX(0) scale(1); }
+}
+
+/* Frontend: wave-like rise with slight rotate */
+@keyframes frontendWave {
+  0% { opacity: 0; transform: translateY(120px) rotate(-1.2deg) scale(0.98); }
+  40% { opacity: 1; transform: translateY(-18px) rotate(1deg) scale(1.02); }
+  100% { opacity: 1; transform: translateY(0) rotate(0deg) scale(1); }
+}
+
+/* Subtle overlay shadow when incoming */
+@keyframes incomingShadow {
+  from { box-shadow: 0 0 0 rgba(0,0,0,0); }
+  to   { box-shadow: 0 30px 80px rgba(0,0,0,0.35); }
 }
 
 /* ===== Navbar ===== */
@@ -70,7 +98,7 @@ body {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  z-index: 10;
+  z-index: 1000; /* keep navbar above pages */
 }
 
 .role {
@@ -79,25 +107,24 @@ body {
 }
 
 .navbar nav a {
-  margin-right: 20px; /* space between menu items */
+  margin-right: 20px;
   text-decoration: none;
   color: #555;
   transition: color 0.3s ease;
   animation: slideUp 0.8s ease forwards;
 }
 .navbar nav a:hover { color: black; }
+.navbar nav a.active { color: #111; font-weight: 700; }
 
-
-/* ===== Hero Section (unchanged structure) ===== */
+/* ===== Hero Section ===== */
 .hero {
   align-items: flex-start;
   width: 100%;
-  display: block; /* don't change your layout, keep block */
+  display: block;
   text-align: center;
   margin-top: 5px;
-  /* ensure hero occupies a full viewport so the scroller snaps correctly */
   min-height: 100vh;
-  position: relative; /* make absolute children position relative to the page */
+  position: relative;
   background: #f3f1eb;
 }
 
@@ -114,7 +141,7 @@ body {
 .hero-title span {
   display: inline-block;
   opacity: 0;
-  transform: translateY(100px);   /* start below */
+  transform: translateY(100px);
   animation: riseUp 0.8s ease forwards;
 }
 .hero-title span:nth-child(1) { animation-delay: 0.2s; }
@@ -145,7 +172,7 @@ body {
   font-size: 29px;
   font-family: 'Trebuchet MS', 'Lucida Sans Unicode', 'Lucida Grande', 'Lucida Sans', Arial, sans-serif;
   color: #444;
-  font-weight: 10px;  
+  font-weight: 10px;
   line-height: 1.3;
   text-align: left;
   opacity: 0;
@@ -215,21 +242,114 @@ body {
   margin-bottom: -40px;
 }
 
-/* ===== Full-page scroller (scoped, doesn't change hero internals) ===== */
-/* Keep page-wide scroll locked to this container so body stays untouched visually */
+/* ===== Full-page scroller & cover-overlap helpers ===== */
 .scroller {
-  height: 100vh;                   /* viewport high scrolling area */
-  overflow-y: auto;                /* scroll inside this container */
+  height: 100vh;
+  overflow-y: auto;
   -webkit-overflow-scrolling: touch;
+  scroll-behavior: smooth;
+  overscroll-behavior: contain;
+  position: relative;
 }
 
-/* All full-screen pages should use .page */
+/* All full-screen pages */
 .page {
-  height: 100vh;                  /* each page occupies full viewport */
-  position: relative;             /* so absolute positioned children work */
+  height: 100vh;
+  position: relative;
+  overflow: visible; /* allow overlap from next page */
 }
 
-/* Second Page Styling (new page below hero) */
+/* Sticky inner block used for cover/overlap illusion */
+.page-inner {
+  position: sticky;
+  top: 0;
+  height: 100vh;
+  width: 100%;
+  z-index: 1;
+  background: inherit; /* ensure background fills */
+  pointer-events: auto;
+  transition: transform 220ms cubic-bezier(.22,.9,.35,1), opacity 220ms ease, box-shadow 220ms ease;
+  will-change: transform, opacity;
+}
+
+/* Fallback: show first page on load (so hero isn't invisible if JS is disabled) */
+.page-inner.page-incoming {
+  z-index: 60 !important; /* JS toggles this class */
+  box-shadow: 0 30px 80px rgba(0,0,0,0.35); /* visual separation */
+}
+
+.page-inner.page-covered {
+  z-index: 20;
+  pointer-events: none; /* disable interactions while covered */
+  /* slight scale / dim handled by JS inline styles for smooth progression */
+}
+
+/* Covered page (the page currently being overlapped) */
+.page-covered {
+  z-index: 20;
+  pointer-events: none; /* disable interactions while overlapped */
+}
+
+/* fallback visual for covered pages (if JS doesn't run)
+   JS will typically set inline transform & opacity for smoother progress */
+.page-covered.page-inner {
+  opacity: 0.82;
+  transform: scale(0.992);
+}
+
+/* ensure the page backgrounds paint fully over pages below */
+.page, .page-inner {
+  background-clip: padding-box;
+}
+
+/* ===== Page-specific animation assignments (run on load) ===== */
+/* These provide a default behavior even without JS */
+#hero .page-inner {
+  animation: heroFade 0.9s ease forwards;
+  animation-delay: 0s;
+  pointer-events: auto;
+}
+
+#services .page-inner {
+  animation: servicesSlide 0.9s ease forwards;
+  animation-delay: 0.08s;
+  pointer-events: auto;
+}
+
+#frontend_02 .page-inner {
+  animation: frontendWave 1s ease forwards;
+  animation-delay: 0.12s;
+  pointer-events: auto;
+}
+
+/* ===== Also support JS-triggered animations by toggling .animate on .page ===== */
+/* Using .page.animate lets you re-trigger or control animation timing with JS */
+.page.animate .page-inner {
+  opacity: 0; /* reset — animation below will set forward */
+  transform: translateY(18px);
+  pointer-events: none;
+}
+
+/* when page gets .animate, pick the per-page animation */
+.page.animate#hero .page-inner {
+  animation: heroFade 0.9s ease forwards;
+  animation-delay: 0s;
+}
+.page.animate#services .page-inner {
+  animation: servicesSlide 0.9s ease forwards;
+  animation-delay: 0.06s;
+}
+.page.animate#frontend_02 .page-inner {
+  animation: frontendWave 1s ease forwards;
+  animation-delay: 0.08s;
+}
+
+/* When animation finishes, allow pointer events by forcing pointer-events:auto on page-inner */
+.page.animate .page-inner[style*="animation"] {
+  pointer-events: auto;
+}
+
+/* ===== Second Page Styling ===== */
 .second-page {
   background: #111;
   color: #fff;
@@ -239,15 +359,10 @@ body {
   align-items: center;
   padding: 40px;
   text-align: center;
-  
 }
 
-/* scoped content style for new page */
-.ankit-next-inner { 
-  max-width:1100px; 
-  width:100%; 
-  margin:0 auto; }
-  
+.ankit-next-inner { max-width:1100px; width:100%; margin:0 auto; }
+
 .ankit-next-title {
   font-size: 9.5vw;
   line-height: 1;
@@ -255,34 +370,33 @@ body {
   margin: 0 0 20px;
   text-transform: uppercase;
   letter-spacing: -4px;
-  position: absolute;   /* take it out of normal flow */
-  top: 30px;           /* move down from top */
+  position: absolute;
+  top: 30px;
   left: 50px;
   color: #c5bcb4;
 }
 .ankit-next-title .slash {
-  font-weight: 900;       /* lighter so it matches visual weight */
-  font-size: 0.8em;       /* slightly smaller than the text */
-  vertical-align: top;    /* aligns slash with top of letters */
-  margin-left: 0.1em;     /* space between text and slash */
+  font-weight: 900;
+  font-size: 0.8em;
+  vertical-align: top;
+  margin-left: 0.1em;
 }
-.ankit-next-sub { 
-  margin: 6px 0 18px; 
-  font-size: 18px; 
-  color: #aaa9a6; 
-  position: absolute;   /* take it out of normal flow */
-  top: 270px;           /* move down from top */
+.ankit-next-sub {
+  margin: 6px 0 18px;
+  font-size: 18px;
+  color: #aaa9a6;
+  position: absolute;
+  top: 270px;
   left: 690px;
   font-family: Arial, Helvetica, sans-serif;
-
 }
-.ankit-next-text { 
-  font-size:28px; 
-  line-height:1.4; 
-  max-width:520px; 
-  color: rgba(255,255,255,0.7); 
-  position: absolute;   /* take it out of normal flow */
-  top: 270px;           /* move down from top */
+.ankit-next-text {
+  font-size:28px;
+  line-height:1.4;
+  max-width:520px;
+  color: rgba(255,255,255,0.7);
+  position: absolute;
+  top: 270px;
   left: 900px;
   font-family: Arial, Helvetica, sans-serif;
   text-align: left;
@@ -312,7 +426,7 @@ body {
   color: #c5bcb4;
   margin: 0;
   line-height: 1;
-  top: 655px;           /* move down from top */
+  top: 655px;
   left: 90px;
   position: absolute;
 }
@@ -323,7 +437,7 @@ body {
   font-weight: bold;
   margin: 10px 0;
   color: #c5bcb4;
-  top: 625px;           /* move down from top */
+  top: 625px;
   left: 650px;
   position: absolute;
   letter-spacing: -4px;
@@ -336,12 +450,11 @@ body {
   color: #aaa9a6;
   margin-bottom: 20px;
   max-width: 500px;
-  top: 800px;           /* move down from top */
+  top: 800px;
   left: 670px;
   position: absolute;
   font-family: 'Inter', 'Archivo', sans-serif;
   letter-spacing: -1px;
-
 }
 
 /* Service tech list */
@@ -353,7 +466,7 @@ body {
   color: #aaa9a6;
   margin-bottom: 20px;
   max-width: 500px;
-  top: 1000px;           /* move down from top */
+  top: 1000px;
   left: 670px;
   position: absolute;
   font-family: 'Inter', 'Archivo', sans-serif;
@@ -361,38 +474,28 @@ body {
 }
 
 .FSD-Key_points li {
-  display: flex;                   /* number + text aligned */
+  display: flex;
   align-items: center;
   margin-bottom: 20px;
-  
 }
 .FSD-Key_points li .number {
-  font-family: "Courier New", monospace; /* clean aligned numbers */
+  font-family: "Courier New", monospace;
   font-size: 20px;
   color: #d3baa4;
-  margin-right: 15px;              /* gap between number and text */
-  min-width: 40px;                 /* keeps numbers aligned vertically */
+  margin-right: 15px;
+  min-width: 40px;
 }
-
-.thin-line_01 {
+.thin-line_01, .thin-line_02 {
   width: 170%;
   border: none;
   border-top: 1px solid rgba(255,255,255,0.2);
   margin: 30px auto 40px auto;
 }
-
-.thin-line_02 {
-  width: 170%;
-  border: none;
-  border-top: 1px solid rgba(255,255,255,0.2);
-  margin: 30px auto 40px auto;
-}
-
 .FSD-Key_points li:last-child {
-  margin-bottom: 50px; /* adjust value as you like */
+  margin-bottom: 50px;
 }
 
-/* ===== Service Section 02 & 03 (Frontend + Backend) ===== */
+/* ===== Service Section 02 & 03 ===== */
 .service-item_02 {
   max-width: 1000px;
   margin: 0 auto;
@@ -407,7 +510,7 @@ body {
   color: #c5bcb4;
   margin: 0;
   line-height: 1;
-  top: 655px;           /* move down from top */
+  top: 655px;
   left: 90px;
   position: absolute;
 }
@@ -417,7 +520,7 @@ body {
   font-weight: bold;
   margin: 10px 0;
   color: #c5bcb4;
-  top: 625px;           /* move down from top */
+  top: 625px;
   left: 650px;
   position: absolute;
   letter-spacing: -4px;
@@ -429,7 +532,7 @@ body {
   color: #aaa9a6;
   margin-bottom: 20px;
   max-width: 500px;
-  top: 800px;           /* move down from top */
+  top: 800px;
   left: 670px;
   position: absolute;
   font-family: 'Inter', 'Archivo', sans-serif;
@@ -444,26 +547,25 @@ body {
   color: #aaa9a6;
   margin-bottom: 20px;
   max-width: 500px;
-  top: 1000px;           /* move down from top */
+  top: 1000px;
   left: 670px;
   position: absolute;
   font-family: 'Inter', 'Archivo', sans-serif;
   letter-spacing: -3px;
 }
-
 .Frontend-Key_points li {
-  display: flex;                   /* number + text aligned */
+  display: flex;
   align-items: center;
   margin-bottom: 20px;
 }
-
 .Frontend-Key_points li .number {
-  font-family: "Courier New", monospace; /* clean aligned numbers */
+  font-family: "Courier New", monospace;
   font-size: 20px;
   color: #d3baa4;
-  margin-right: 15px;              /* gap between number and text */
-  min-width: 40px; 
+  margin-right: 15px;
+  min-width: 40px;
 }
+
 
 
 /* ===== Responsive Design ===== */
@@ -473,10 +575,18 @@ body {
     flex-direction: column;
     align-items: center;
     text-align: center;
+    gap: 20px;
+    top: 200px;
+    left: 50%;
+    transform: translateX(-50%);
   }
-  .intro { max-width: 100%; }
+  .intro { max-width: 100%; font-size: 18px; }
   .photo img { width: 200px; margin: 20px 0; }
-  .availability { text-align: center; }
+  .availability { text-align: center; left: 50%; transform: translateX(-50%); }
+
+  /* disable sticky cover effect on smaller screens */
+  .page-inner { position: relative; top: 0; transform: none !important; opacity: 1 !important; box-shadow: none !important; pointer-events: auto; }
+  .page-covered, .page-incoming { transform: none !important; opacity: 1 !important; box-shadow: none !important; }
 }
 
 @media (max-width: 500px) {
@@ -484,4 +594,3 @@ body {
   .contact-btn { padding: 10px 18px; font-size: 14px; height: auto; line-height: normal; }
   .availability-date { font-size: 60px; }
 }
-
