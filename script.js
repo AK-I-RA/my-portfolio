@@ -1,147 +1,142 @@
-/* ---------------------------
-   Smooth nav clicks (inside .scroller)
-   --------------------------- */
-document.querySelectorAll('.navbar a[href^="#"]').forEach(anchor => {
-  anchor.addEventListener('click', function (e) {
-    e.preventDefault();
-    const scroller = document.querySelector('.scroller');
-    const target = document.querySelector(this.getAttribute('href'));
-    if (!scroller || !target) return;
-    target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+/* ==========================
+   Cover-overlap script (pointer-driven)
+   Keep this as script.js
+   ========================== */
+
+document.addEventListener('DOMContentLoaded', () => {
+  const scroller = document.querySelector('.scroller');
+  if (!scroller) {
+    console.error('No .scroller found');
+    return;
+  }
+  const pages = Array.from(scroller.querySelectorAll('.page'));
+  if (!pages.length) return;
+
+  // nav clicks (kept simple & compatible)
+  document.querySelectorAll('.navbar a[href^="#"]').forEach(anchor => {
+    anchor.addEventListener('click', function (e) {
+      e.preventDefault();
+      const target = document.querySelector(this.getAttribute('href'));
+      if (!target) return;
+      target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    });
   });
-});
 
-/* ---------------------------
-   Setup references
-   --------------------------- */
-const scroller = document.querySelector('.scroller');
-if (!scroller) {
-  console.error('No .scroller found — ensure script runs after DOM and .scroller exists.');
-  throw new Error('No .scroller found');
-}
-const pages = Array.from(scroller.querySelectorAll('.page'));
-const navLinks = document.querySelectorAll('.navbar a');
+  // pointer state (normalized)
+  let pointerTargetY = 0.95;
+  let pointerY = 0.95;
+  const pointerEase = 0.12;
 
-/* ---------------------------
-   IntersectionObserver: nav highlighting (scroller root)
-   - Also toggles .animate on the .page element so CSS per-page animations run on view.
-   --------------------------- */
-if (scroller && pages.length) {
-  const io = new IntersectionObserver((entries) => {
-    entries.forEach(entry => {
-      const id = entry.target.id;
-      // nav highlight
-      if (entry.isIntersecting) {
-        navLinks.forEach(a => a.classList.toggle('active', a.getAttribute('href') === `#${id}`));
-        entry.target.classList.add('animate'); // optional child triggers
+  function setPointer(y) {
+    pointerTargetY = Math.max(0, Math.min(1, y));
+  }
+
+  window.addEventListener('mousemove', (e) => setPointer(e.clientY / window.innerHeight));
+  window.addEventListener('touchmove', (e) => {
+    if (e.touches && e.touches[0]) setPointer(e.touches[0].clientY / window.innerHeight);
+  }, { passive: true });
+
+  window.addEventListener('mouseleave', () => setPointer(0.95));
+  window.addEventListener('touchend', () => setPointer(0.95));
+
+  function lerp(a, b, t) { return a + (b - a) * t; }
+  function clamp(v, a = 0, b = 1) { return Math.max(a, Math.min(b, v)); }
+
+  // Ensure all nextInner start at 100% (safety)
+  pages.forEach((p, i) => {
+    const inner = p.querySelector('.page-inner') || p;
+    if (i !== 0) inner.style.transform = 'translate3d(0,100%,0)';
+    inner.style.willChange = 'transform, opacity';
+  });
+
+  // main update loop
+  function update() {
+    // smooth pointer
+    pointerY = lerp(pointerY, pointerTargetY, pointerEase);
+
+    // disable effect on small screens
+    const mobile = window.innerWidth < 900;
+    const viewHeight = scroller.clientHeight;
+    const scRect = scroller.getBoundingClientRect();
+
+    pages.forEach((page, i) => {
+      const inner = page.querySelector('.page-inner') || page;
+      const next = pages[i + 1];
+      // reset per-frame classes (we add as needed)
+      inner.classList.remove('page-covered');
+      if (!next) return;
+
+      const nextInner = next.querySelector('.page-inner') || next;
+      const nextRect = next.getBoundingClientRect();
+
+      // distance from next.top to scroller.top
+      const distance = nextRect.top - scRect.top;
+      // progress 0..1 as next.top goes from below viewport to top
+      const progress = clamp(1 - (distance / viewHeight), 0, 1);
+
+      if (mobile) {
+        // fallback: keep default sticky behaviour — reset inline styles
+        nextInner.style.transform = '';
+        inner.style.opacity = '';
+        inner.style.transform = '';
+        nextInner.classList.remove('page-incoming');
+        inner.classList.remove('page-covered');
+        return;
+      }
+
+      if (progress > 0) {
+        inner.classList.add('page-covered');
+        nextInner.classList.add('page-incoming');
+
+        // base translate in px from scroll (100% -> 0px)
+        const basePx = (1 - progress) * viewHeight;
+
+        // pointer pull: move pointer up (pointerY small) -> larger pull
+        const pointerPull = clamp((1 - pointerY), 0, 1);
+
+        // pointer influence scaled by progress (so pointer matters mostly when section is peeking)
+        const pointerInfluencePx = viewHeight * 0.85 * pointerPull * progress;
+
+        // final translate (px)
+        let finalPx = basePx - pointerInfluencePx;
+        // clamp so it doesn't go negative (we lock to 0 when fully covered)
+        finalPx = Math.max(0, finalPx);
+
+        const finalPct = (finalPx / viewHeight) * 100;
+        nextInner.style.transform = `translate3d(0, ${finalPct}%, 0)`;
+
+        // subtle fade & scale on covered page
+        inner.style.opacity = `${1 - (0.18 * progress)}`; // matches your screenshot fade
+        inner.style.transform = `scale(${1 - (0.006 * progress)})`;
+
+        // if fully pulled (finalPx very small) lock incoming to 0 and disable pointer events on covered
+        if (finalPx <= 0.5) {
+          nextInner.style.transform = `translate3d(0, 0%, 0)`;
+          inner.style.pointerEvents = 'none';
+        } else {
+          inner.style.pointerEvents = '';
+        }
       } else {
-        entry.target.classList.remove('animate');
+        // reset when next isn't peeking
+        nextInner.classList.remove('page-incoming');
+        nextInner.style.transform = `translate3d(0,100%,0)`;
+        inner.classList.remove('page-covered');
+        inner.style.transform = '';
+        inner.style.opacity = '';
+        inner.style.pointerEvents = '';
       }
     });
-  }, { root: scroller, threshold: 0.6 });
 
-  pages.forEach(p => io.observe(p));
-}
-
-/* ---------------------------
-   Utilities
-   --------------------------- */
-const clamp = (v, a = 0, b = 1) => Math.max(a, Math.min(b, v));
-
-/* ---------------------------
-   Cover-overlap animation loop
-   - incoming .page-inner moves from translateY(100%) -> translateY(0%)
-   - previous page gets a subtle dim / scale
-   - effect disabled under 900px
-   --------------------------- */
-let ticking = false;
-
-function updateCoverOverlap() {
-  if (!scroller || !pages.length) {
-    ticking = false;
-    return;
+    requestAnimationFrame(update);
   }
 
-  // disable effect on small screens (mobile)
-  if (window.innerWidth < 900) {
-    pages.forEach(page => {
-      const inner = page.querySelector('.page-inner') || page;
-      inner.classList.remove('page-incoming', 'page-covered');
-      inner.style.transform = '';
-      inner.style.opacity = '';
-      inner.style.pointerEvents = '';
+  requestAnimationFrame(update);
+
+  // keep layout consistent on resize
+  window.addEventListener('resize', () => {
+    pages.forEach((p, i) => {
+      const inner = p.querySelector('.page-inner') || p;
+      if (i !== 0) inner.style.transform = 'translate3d(0,100%,0)';
     });
-    ticking = false;
-    return;
-  }
-
-  const scrollerRect = scroller.getBoundingClientRect();
-  const viewHeight = scroller.clientHeight;
-
-  pages.forEach((page, i) => {
-    const inner = page.querySelector('.page-inner') || page;
-    const next = pages[i + 1];
-
-    // reset defaults for this frame
-    inner.classList.remove('page-covered');
-    inner.style.pointerEvents = '';
-    // we intentionally do not reset transform/opacity here for non-active pages (so non-first remain offscreen)
-    if (!next) {
-      // still make sure this page content responds slightly to scroll if you want (optional)
-      return;
-    }
-
-    const nextInner = next.querySelector('.page-inner') || next;
-    const nextRect = next.getBoundingClientRect();
-
-    // distance from next.top to scroller.top in viewport coords
-    const distance = nextRect.top - scrollerRect.top;
-    // progress goes 0 -> 1 as next.top moves from below viewport to aligned (or in)
-    const progress = clamp(1 - (distance / viewHeight), 0, 1);
-
-    if (progress > 0) {
-      // mark classes so CSS can add shadow / z-index
-      inner.classList.add('page-covered');
-      nextInner.classList.add('page-incoming');
-
-      // incoming: from 100% (off-screen) -> 0% (in-place)
-      const incomingPct = (1 - progress) * 100; // 100 -> 0
-      nextInner.style.transform = `translateY(${incomingPct}%)`;
-      nextInner.style.willChange = 'transform';
-      nextInner.style.pointerEvents = 'auto';
-
-      // covered page slight visual tweak (non-invasive)
-      inner.style.opacity = `${1 - (0.12 * progress)}`;
-      inner.style.transform = `scale(${1 - (0.005 * progress)})`;
-      inner.style.willChange = 'transform, opacity';
-      inner.style.pointerEvents = progress > 0.5 ? 'none' : 'auto';
-    } else {
-      // reset nextInner to stay OFFSCREEN until needed
-      nextInner.classList.remove('page-incoming');
-      nextInner.style.transform = `translateY(100%)`;
-      nextInner.style.willChange = '';
-      nextInner.style.pointerEvents = '';
-      // reset covered state if any
-      inner.classList.remove('page-covered');
-      inner.style.transform = '';
-      inner.style.opacity = '';
-    }
   });
-
-  ticking = false;
-}
-
-function onScroll() {
-  if (!ticking) {
-    requestAnimationFrame(updateCoverOverlap);
-    ticking = true;
-  }
-}
-
-/* ---------------------------
-   Attach scroll/resize/load handlers
-   --------------------------- */
-scroller.addEventListener('scroll', onScroll, { passive: true });
-window.addEventListener('resize', () => requestAnimationFrame(updateCoverOverlap));
-window.addEventListener('load', () => requestAnimationFrame(updateCoverOverlap));
-requestAnimationFrame(updateCoverOverlap);
+});

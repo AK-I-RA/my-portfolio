@@ -124,7 +124,7 @@ body {
   text-align: center;
   margin-top: 5px;
   min-height: 100vh;
-  position: relative;
+  position: sticky;
   background: #f3f1eb;
 }
 
@@ -593,4 +593,8 @@ body {
   .hero-title { font-size: 36px; }
   .contact-btn { padding: 10px 18px; font-size: 14px; height: auto; line-height: normal; }
   .availability-date { font-size: 60px; }
+}
+.page:not(:first-child) .page-inner {
+  transform: translate3d(0,100%,0);
+  will-change: transform, opacity;
 }
