@@ -1,10 +1,6 @@
 /* ===== Reset & Base ===== */
-* {
-  margin: 0;
-  padding: 0;
-  box-sizing: border-box;
-}
-
+* { margin: 0; padding: 0; box-sizing: border-box; }
+html,body { height: 100%; }
 body {
   margin: 0;
   font-family:'Franklin Gothic Medium', 'Arial Narrow', Arial, sans-serif;
@@ -17,27 +13,12 @@ body {
 }
 
 /* ===== Animations ===== */
-@keyframes fadeIn {
-  from { opacity: 0; }
-  to   { opacity: 1; }
-}
-
-@keyframes slideUp {
-  from { opacity: 0; transform: translateY(30px); }
-  to   { opacity: 1; transform: translateY(0); }
-}
-
-@keyframes slideDown {
-  from { opacity: 0; transform: translateY(-100px); }
-  to   { opacity: 1; transform: translateY(0); }
-}
+@keyframes fadeIn { from { opacity: 0; } to   { opacity: 1; } }
+@keyframes slideUp { from { opacity: 0; transform: translateY(30px); } to   { opacity: 1; transform: translateY(0); } }
+@keyframes slideDown { from { opacity: 0; transform: translateY(-100px); } to   { opacity: 1; transform: translateY(0); } }
 
 /* wave animation */
-@keyframes waveUpDown {
-  0%   { transform: translateY(100px); opacity: 0; }
-  10%  { transform: translateY(-20px); opacity: 1; }
-  100% { transform: translateY(0); opacity: 1; }
-}
+@keyframes waveUpDown { 0%   { transform: translateY(100px); opacity: 0; } 10%  { transform: translateY(-20px); opacity: 1; } 100% { transform: translateY(0); opacity: 1; } }
 
 @keyframes shutterOpen {
   from {
@@ -50,16 +31,7 @@ body {
   }
 }
 
-@keyframes riseUp {
-  from {
-    opacity: 0;
-    transform: translateY(100px);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
-}
+@keyframes riseUp { from { opacity: 0; transform: translateY(100px); } to { opacity: 1; transform: translateY(0); } }
 
 /* ===== Page-specific keyframes (custom per page) ===== */
 /* Hero: gentle fade + scale */
@@ -84,10 +56,7 @@ body {
 }
 
 /* Subtle overlay shadow when incoming */
-@keyframes incomingShadow {
-  from { box-shadow: 0 0 0 rgba(0,0,0,0); }
-  to   { box-shadow: 0 30px 80px rgba(0,0,0,0.35); }
-}
+@keyframes incomingShadow { from { box-shadow: 0 0 0 rgba(0,0,0,0); } to   { box-shadow: 0 30px 80px rgba(0,0,0,0.35); } }
 
 /* ===== Navbar ===== */
 .navbar {
@@ -268,30 +237,31 @@ body {
   z-index: 1;
   background: inherit; /* ensure background fills */
   pointer-events: auto;
-  transition: transform 220ms cubic-bezier(.22,.9,.35,1), opacity 220ms ease, box-shadow 220ms ease;
+  transition: transform 420ms cubic-bezier(.22,.9,.35,1), opacity 260ms ease, box-shadow 420ms ease;
   will-change: transform, opacity;
 }
 
-/* Fallback: show first page on load (so hero isn't invisible if JS is disabled) */
+/* NEW: stronger visual styles for incoming / covered pages (only animation/visuals changed) */
+/* Keep fonts and layout untouched; these rules only affect overlap appearance and timing. */
 .page-inner.page-incoming {
-  z-index: 60 !important; /* JS toggles this class */
-  box-shadow: 0 30px 80px rgba(0,0,0,0.35); /* visual separation */
+  z-index: 60 !important;
+  /* when incoming we add a soft lift and shadow; JS will still set translate3d inline for precise position */
+  box-shadow: 0 30px 80px rgba(0,0,0,0.35);
+  /* allow the transition above to animate transform/opacity */
+  transform-origin: top center;
+  border-radius: 6px; /* subtle rounding during overlap for depth */
 }
 
 .page-inner.page-covered {
   z-index: 20;
   pointer-events: none; /* disable interactions while covered */
-  /* slight scale / dim handled by JS inline styles for smooth progression */
+  /* subtle dim + scale to emphasize the incoming page */
+  opacity: 0.86;
+  transform: scale(0.996);
+  filter: saturate(0.98) brightness(0.98);
 }
 
-/* Covered page (the page currently being overlapped) */
-.page-covered {
-  z-index: 20;
-  pointer-events: none; /* disable interactions while overlapped */
-}
-
-/* fallback visual for covered pages (if JS doesn't run)
-   JS will typically set inline transform & opacity for smoother progress */
+/* Covered page fallback visual (if JS doesn't run) */
 .page-covered.page-inner {
   opacity: 0.82;
   transform: scale(0.992);
@@ -303,7 +273,6 @@ body {
 }
 
 /* ===== Page-specific animation assignments (run on load) ===== */
-/* These provide a default behavior even without JS */
 #hero .page-inner {
   animation: heroFade 0.9s ease forwards;
   animation-delay: 0s;
@@ -566,8 +535,6 @@ body {
   min-width: 40px;
 }
 
-
-
 /* ===== Responsive Design ===== */
 @media (max-width: 900px) {
   .hero-title { font-size: 50px; text-align: center; }
@@ -593,8 +560,4 @@ body {
   .hero-title { font-size: 36px; }
   .contact-btn { padding: 10px 18px; font-size: 14px; height: auto; line-height: normal; }
   .availability-date { font-size: 60px; }
-}
-.page:not(:first-child) .page-inner {
-  transform: translate3d(0,100%,0);
-  will-change: transform, opacity;
 }
