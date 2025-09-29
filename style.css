@@ -93,7 +93,7 @@ body {
   text-align: center;
   margin-top: 5px;
   min-height: 100vh;
-  position: sticky;
+  position: fixed;
   background: #f3f1eb;
 }
 
