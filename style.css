@@ -600,3 +600,4 @@ body {
   .page-inner { transition: none !important; transform: none !important; box-shadow: none !important; opacity: 1 !important; pointer-events: auto !important; }
   .page-inner.page-incoming, .page-inner.page-covered { box-shadow: none; transform: none; opacity: 1; pointer-events: auto; }
 }
+
