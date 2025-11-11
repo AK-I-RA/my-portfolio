@@ -2,135 +2,123 @@ document.addEventListener('DOMContentLoaded', () => {
   const scroller = document.querySelector('.scroller');
   if (!scroller) return;
 
+  // Every full-screen section
   const pages = Array.from(scroller.querySelectorAll('.page'));
   if (!pages.length) return;
 
-  // Navbar smooth scroll (unchanged behavior)
-  document.querySelectorAll('.navbar a[href^="#"]').forEach(anchor => {
-    anchor.addEventListener('click', function (e) {
-      e.preventDefault();
-      const target = document.querySelector(this.getAttribute('href'));
-      if (target) {
-        target.scrollIntoView({ behavior: 'smooth', block: 'start' });
-      }
-    });
-  });
+  // Each page's sticky inner wrapper (or the page itself if inner missing)
+  const inners = pages.map(p => p.querySelector('.page-inner') || p);
 
-  // Pointer tracking for subtle parallax
-  let pointerTargetY = 0.95;
-  let pointerY = 0.95;
-  const pointerEase = 0.12;
-
-  function setPointer(y) { pointerTargetY = Math.max(0, Math.min(1, y)); }
-  window.addEventListener('mousemove', e => setPointer(e.clientY / window.innerHeight));
-  window.addEventListener('touchmove', e => {
-    if (e.touches && e.touches[0]) setPointer(e.touches[0].clientY / window.innerHeight);
-  }, { passive: true });
-  window.addEventListener('mouseleave', () => setPointer(0.95));
-  window.addEventListener('touchend', () => setPointer(0.95));
-
-  function lerp(a, b, t) { return a + (b - a) * t; }
-  function clamp(v, a = 0, b = 1) { return Math.max(a, Math.min(b, v)); }
-
-  // Set up initial transforms: every page's .page-inner except the first should be off-screen
-  pages.forEach((p, i) => {
-    const inner = p.querySelector('.page-inner') || p;
+  // Initialize: park every page after the first below the viewport
+  inners.forEach((inner, i) => {
+    inner.style.willChange = 'transform, opacity, box-shadow, filter';
     if (i !== 0) inner.style.transform = 'translate3d(0,100%,0)';
-    inner.style.willChange = 'transform, opacity';
   });
 
-  // Main RAF loop
-  function update() {
-    pointerY = lerp(pointerY, pointerTargetY, pointerEase);
+  // Compute each page's top offset relative to the SCROLLER (not the window)
+  let pageTops = [];
+  function computeTops() {
+    pageTops = pages.map(p => p.offsetTop);
+  }
+  computeTops();
 
-    const mobile = window.innerWidth < 900;
-    const viewHeight = window.innerHeight;
-    const scRect = scroller.getBoundingClientRect();
+  // Recompute when layout changes
+  const ro = new ResizeObserver(() => computeTops());
+  pages.forEach(p => ro.observe(p));
 
-    pages.forEach((page, i) => {
-      const inner = page.querySelector('.page-inner') || page;
-      const next = pages[i + 1];
+  let ticking = false;
 
-      // clear classes, we'll add them again if needed
-      inner.classList.remove('page-covered');
-      inner.classList.remove('page-incoming');
+  function frame() {
+    ticking = false;
 
+    const sTop = scroller.scrollTop;
+    const vh = scroller.clientHeight;
+
+    // Walk each pair (current page + next page)
+    for (let i = 0; i < inners.length; i++) {
+      const current = inners[i];
+      const next = inners[i + 1];
+
+      // Clear state each pass
+      current.classList.remove('page-covered');
+      if (next) next.classList.remove('page-incoming');
+
+      // Last page: ensure visible & interactive
       if (!next) {
-        // no next page: make sure current page is fully visible
-        inner.style.transform = '';
-        inner.style.opacity = '';
-        inner.style.pointerEvents = '';
-        return;
+        current.style.transform = '';
+        current.style.opacity = '';
+        current.style.pointerEvents = '';
+        continue;
       }
 
-      const nextInner = next.querySelector('.page-inner') || next;
-      const nextRect = nextInner.getBoundingClientRect();
+      const nextTop = pageTops[i + 1];     // where the next page starts in scroller content
+      const distance = nextTop - sTop;     // px from scroller top to next page start
+      const progress = Math.max(0, Math.min(1, 1 - (distance / vh))); // 0→1 as next reaches the top
 
-      // distance from top of scroller to top of next page
-      const distance = nextRect.top - scRect.top;
-      // progress from 0 (next page below viewport) -> 1 (next reached top)
-      const progress = clamp(1 - (distance / viewHeight), 0, 1);
-
-      if (mobile) {
-        // on mobile disable overlap and keep normal flow (clean fallback)
-        nextInner.style.transform = '';
-        inner.style.opacity = '';
-        inner.style.transform = '';
-        nextInner.classList.remove('page-incoming');
-        inner.classList.remove('page-covered');
-        nextInner.style.pointerEvents = '';
-        inner.style.pointerEvents = '';
-        return;
+      if (progress <= 0) {
+        // Next page still fully below; keep it parked
+        next.style.transform = 'translate3d(0,100%,0)';
+        next.style.opacity = '';
+        current.style.transform = '';
+        current.style.opacity = '';
+        current.style.pointerEvents = '';
+        continue;
       }
 
-      if (progress > 0) {
-        // mark states so CSS takes visual priority
-        inner.classList.add('page-covered');
-        nextInner.classList.add('page-incoming');
+      // Overlap state
+      current.classList.add('page-covered');
+      next.classList.add('page-incoming');
 
-        // base translate in percent (incoming starts at 100% -> 0%)
-        // we slightly reduce arrival offset based on pointer height to create a subtle parallax
-        const pointerPull = clamp((1 - pointerY), 0, 1);
-        const pointerInfluence = pointerPull * 0.18 * progress; // small factor
-        const incomingPct = Math.max(0, (1 - progress) * 100 - (pointerInfluence * 100));
+      // Incoming translate: 100% → 0% as progress 0 → 1
+      const incomingPct = Math.max(0, (1 - progress) * 100);
+      next.style.transform = `translate3d(0, ${incomingPct}%, 0)`;
 
-        // set transform on incoming page; CSS transition will animate to this value
-        nextInner.style.transform = `translate3d(0, ${incomingPct}%, 0)`;
+      // Covered page’s subtle dim/scale/lift
+      current.style.opacity = String(1 - (0.14 * progress));
+      current.style.transform = `scale(${1 - 0.0065 * progress}) translateY(${-2.2 * progress}vh)`;
 
-        // fade & scale covered page (small amount) to give depth
-        inner.style.opacity = `${1 - (0.14 * progress)}`;
-        inner.style.transform = `scale(${1 - (0.0065 * progress)}) translateY(${(-2.2 * progress)}vh)`;
-
-        // when fully arrived, lock incoming to exact position and disable interactions on covered page
-        if (incomingPct <= 0.5) {
-          nextInner.style.transform = `translate3d(0, 0%, 0)`;
-          inner.style.pointerEvents = 'none';
-        } else {
-          inner.style.pointerEvents = '';
-        }
+      // When essentially on top, snap & disable interactions beneath
+      if (incomingPct <= 0.5) {
+        next.style.transform = 'translate3d(0,0,0)';
+        current.style.pointerEvents = 'none';
       } else {
-        // reset if progress == 0 (next page is fully below viewport)
-        nextInner.classList.remove('page-incoming');
-        nextInner.style.transform = `translate3d(0,100%,0)`;
-        inner.classList.remove('page-covered');
-        inner.style.transform = '';
-        inner.style.opacity = '';
-        inner.style.pointerEvents = '';
+        current.style.pointerEvents = '';
       }
-    });
-
-    requestAnimationFrame(update);
+    }
   }
 
-  requestAnimationFrame(update);
+  function requestFrame() {
+    if (!ticking) {
+      ticking = true;
+      requestAnimationFrame(frame);
+    }
+  }
 
-  // ensure pages reset on resize
+  // Scroll the SCROLLER (not window)
+  scroller.addEventListener('scroll', requestFrame, { passive: true });
+
+  // Re-init on resize/orientation
   window.addEventListener('resize', () => {
-    pages.forEach((p, i) => {
-      const inner = p.querySelector('.page-inner') || p;
-      if (i !== 0) inner.style.transform = 'translate3d(0,100%,0)';
+    computeTops();
+    inners.forEach((inner, i) => {
+      inner.classList.remove('page-covered', 'page-incoming');
       inner.style.opacity = '';
       inner.style.pointerEvents = '';
+      inner.style.transform = i === 0 ? '' : 'translate3d(0,100%,0)';
+    });
+    requestFrame();
+  });
+
+  // Smooth nav links (kept simple)
+  document.querySelectorAll('.navbar a[href^="#"]').forEach(a => {
+    a.addEventListener('click', e => {
+      e.preventDefault();
+      const id = a.getAttribute('href');
+      const el = document.querySelector(id);
+      if (el) el.scrollIntoView({ behavior: 'smooth', block: 'start' });
     });
   });
+
+  // First paint
+  requestFrame();
 });
