@@ -619,8 +619,8 @@ body {
 }
 
 /* page background colors for quick testing — replace with your own images/gradients */
-.part:nth-of-type(1) { background-color: red; }
+/*.part:nth-of-type(1) { background-color: red; }
 .part:nth-of-type(2) { background-color: green; }
-.part:nth-of-type(3) { background-color: blue; }
+.part:nth-of-type(3) { background-color: blue; }*/
 
 /* If you want the header to be visually transparent over pages, comment out the header background rule above. */
