@@ -1,110 +1,446 @@
 <!DOCTYPE html>
+<!--
+  =====================================================================
+  Ankit Rawat — Portfolio
+  ---------------------------------------------------------------------
+  Files:  index.html (structure & content)
+          style.css  (all styling, numbered sections)
+          script.js  (all interactivity, numbered sections)
+          assets/    (photo, AtCoder logo)
+
+  PAGE MAP
+    1. Page-load curtain
+    2. Floating menu button + full-screen menu
+    3. Hero (#hero)           light, sticky intro screen
+    4. Content sheet (<main>) dark panel that slides over the hero
+         4a. Services (#services)
+         4b. Works    (#works)
+         4c. Skills   (#skills)
+         4d. About    (#about)
+    5. Contact (#contact)     revealed as the content sheet lifts away
+    6. Footer
+    7. Custom cursor + scripts
+
+  Animation attributes (handled by script.js + style.css section 04):
+    data-split="words|chars"  text slides in word by word / letter by letter
+    data-anim="fade|rise|photo"
+  =====================================================================
+-->
 <html lang="en">
 <head>
-  <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width,initial-scale=1" />
-  <title>Ankit Rawat — Portfolio</title>
-  <link rel="stylesheet" href="style.css">
-  <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@700;900&display=swap" rel="stylesheet">
+<!-- ===== Meta & SEO ===== -->
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<title>Ankit Rawat — Full-Stack Developer</title>
+<meta name="description" content="Portfolio of Ankit Rawat — full-stack developer and data science enthusiast building thoughtful, data-driven digital experiences.">
+<meta name="theme-color" content="#e9e9e5">
+
+<!-- ===== Fonts (Inter Tight = display, Inter = body, JetBrains Mono = labels) ===== -->
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter+Tight:wght@500;600;700&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@300;400;500;700&display=swap" rel="stylesheet">
+
+<!-- ===== Styles (bump ?v= after editing so browsers skip the cached copy) ===== -->
+<link rel="stylesheet" href="style.css?v=15">
+
+<!-- ===== Animation safety net ===== -->
+<script>
+  // Hide animated elements until script.js takes over; reveal everything if it never does.
+  document.documentElement.classList.add('js');
+  setTimeout(function () { if (!window.__portfolioReady) document.documentElement.classList.remove('js'); }, 4000);
+</script>
 </head>
 <body>
-  <!-- Navbar (unchanged except added header class) -->
-  <header class="navbar header">
-    <span class="role">Web Developer & Designer</span>
-    <nav>
+
+  <!-- =================================================================
+       1. PAGE-LOAD CURTAIN
+       Dark panel with a curved bottom edge that slides up on load.
+       ================================================================= -->
+  <div class="curtain" aria-hidden="true">
+    <svg viewBox="0 0 1000 100" preserveAspectRatio="none"><path d="M0 0 H1000 V0 Q500 100 0 0 Z" /></svg>
+  </div>
+
+  <!-- =================================================================
+       2. FLOATING MENU BUTTON + FULL-SCREEN MENU
+       The button appears once the hero is scrolled past; clicking it
+       opens the panel with a circular wipe.
+       ================================================================= -->
+  <button class="menu-btn" id="menuBtn" aria-label="Open menu" aria-expanded="false" aria-controls="menuPanel">
+    <span></span><span></span>
+  </button>
+
+  <div class="menu-panel" id="menuPanel" aria-hidden="true">
+    <nav aria-label="Menu">
       <a href="#hero">Home</a>
       <a href="#services">Services</a>
+      <a href="#works">Works</a>
       <a href="#about">About</a>
       <a href="#contact">Contact</a>
     </nav>
-  </header> 
+    <div class="menu-foot">
+      <a href="mailto:ankitrawat7895@gmail.com">ankitrawat7895@gmail.com</a>
+      <a href="https://github.com/AK-I-RA" target="_blank" rel="noopener">GitHub ↗</a>
+    </div>
+  </div>
 
-  <!-- scroller: isolates full-page scrolling so your hero CSS isn't touched -->
-  <main class="scroller">
+  <!-- =================================================================
+       3. HERO
+       Sticky, full-screen intro. The dark content sheet slides over it
+       while it shrinks and fades (script.js section 07).
+       ================================================================= -->
+  <section id="hero" class="hero">
+    <div class="hero-inner">
 
-    <!-- ===== Hero (wrapped in .page-inner for sticky/cover effects) ===== -->
-    <section id="hero" class="hero page part" data-effect="parallax">
-      <div class="page-inner">
-        <h1 class="hero-title">
-            <span>A</span><span>N</span><span>K</span><span>I</span><span>T</span>
-            <span>R</span><span>A</span><span>W</span><span>A</span><span>T</span>
+      <!-- Top bar: role + navigation -->
+      <header class="hero-header">
+        <span class="role" data-anim="fade">Web Developer &amp; Designer</span>
+        <nav class="hero-nav" aria-label="Primary">
+          <a href="#services" class="roll" data-anim="fade" data-text="Services"><span>Services</span></a>
+          <a href="#works" class="roll" data-anim="fade" data-text="Works"><span>Works</span></a>
+          <a href="#about" class="roll" data-anim="fade" data-text="About"><span>About</span></a>
+          <a href="#contact" class="roll" data-anim="fade" data-text="Contact"><span>Contact</span></a>
+        </nav>
+      </header>
+
+      <div class="hero-bottom">
+        <!-- Giant name, auto-scaled to the full width by script.js (fitName) -->
+        <h1 class="hero-name" id="heroName" aria-label="Ankit Rawat">
+          <span class="fit" aria-hidden="true">
+            <span class="name-line" data-split="chars">Ankit</span><span class="name-gap"> </span><span class="name-line" data-split="chars">Rawat</span>
+          </span>
         </h1>
 
-        <div class="hero-content">
-          <div class="intro">
-            <p>
-              Open to job opportunities worldwide. Passionate about building polished, intuitive, 
-              and thoughtful digital experiences that leave a mark.
-            </p>
-            <a href="#contact" class="contact-btn">CONTACT ↗</a>
+        <!-- Bottom row: intro + Contact button | photo | availability -->
+        <div class="hero-grid">
+          <div class="hero-left">
+            <svg class="hero-arrow" data-anim="fade" viewBox="6 6 12 12" fill="none" stroke="currentColor" stroke-width="1.25" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+              <line x1="7" y1="7" x2="17" y2="17"/><polyline points="17 7 17 17 7 17"/>
+            </svg>
+            <p class="hero-headline" data-split="words">Full-stack developer building thoughtful digital experiences, with a growing focus on data &amp; AI.</p>
+            <div class="clip"><a href="#contact" class="pill" data-anim="rise"><span class="pill-fill"></span><span class="pill-text" data-text="Contact ↗"><span>Contact ↗</span></span></a></div>
           </div>
 
-          <div class="photo">
-            <img src="assets/ankit-photo.webp" alt="Portfolio Photo">
+          <div class="hero-photo" data-anim="photo">
+            <img src="assets/ankit-photo.webp" alt="A sunlit corner of my room, with a vintage world map on the wall" width="480" height="600">
           </div>
 
-          <div class="availability">
-            <div class="availability-text">AVAILABLE FOR WORK</div>
-            <div class="availability-date">JUN'25</div>
+          <!-- Month/year filled in by script.js -->
+          <div class="hero-right">
+            <span class="mono avail-label" data-split="words">Available for work</span>
+            <span class="avail-date" id="availabilityDate" data-split="words">—</span>
+          </div>
+        </div>
+      </div>
+    </div>
+    <!-- Gives the sticky hero one screen of scroll room -->
+    <div class="hero-spacer"></div>
+  </section>
+
+  <!-- =================================================================
+       4. CONTENT SHEET
+       Dark rounded panel holding Services, Works, Skills and About.
+       ================================================================= -->
+  <main class="content">
+
+    <!-- ===== 4a. SERVICES =====
+         Four cards that stack on top of each other while scrolling.
+         --i is each card's position in the stack (0–3); the empty
+         .service-gap divs control how long each card stays put. -->
+    <section id="services" class="section">
+      <h2 class="section-heading" data-split="chars">What I Do <em>/</em></h2>
+      <div class="section-intro">
+        <span class="mono label">(Services)</span>
+        <p data-split="words">I specialize in building full-stack web applications that are fast, reliable, and user-friendly, with a growing focus on data-driven and AI-powered tools.</p>
+      </div>
+
+      <div class="service-stack">
+        <!-- Card 01: Full-Stack Development -->
+        <article class="service-card" style="--i:0">
+          <div class="service-head"><span>(01)</span><h3>Full-Stack Development</h3></div>
+          <div class="service-body">
+            <p>From frontend interactions to backend APIs, I build complete web solutions using modern stacks that are scalable, maintainable, and ready for real-world users.</p>
+            <ol class="tool-list">
+              <li><span class="mono">01</span>React, Node.js, Express.js</li>
+              <li><span class="mono">02</span>REST APIs, Firebase, Docker</li>
+              <li><span class="mono">03</span>Git, GitHub, Postman</li>
+            </ol>
+          </div>
+        </article>
+        <div class="service-gap" aria-hidden="true"></div>
+
+        <!-- Card 02: UI/UX & Frontend -->
+        <article class="service-card" style="--i:1">
+          <div class="service-head"><span>(02)</span><h3>UI/UX &amp; Frontend</h3></div>
+          <div class="service-body">
+            <p>Design is more than looks. It's about clarity. I design and develop clean, responsive interfaces that feel intuitive and accessible across every device.</p>
+            <ol class="tool-list">
+              <li><span class="mono">01</span>Next.js, Tailwind CSS, GSAP</li>
+              <li><span class="mono">02</span>Figma to code</li>
+              <li><span class="mono">03</span>HTML, CSS, JavaScript</li>
+            </ol>
+          </div>
+        </article>
+        <div class="service-gap" aria-hidden="true"></div>
+
+        <!-- Card 03: Data Science & ML -->
+        <article class="service-card" style="--i:2">
+          <div class="service-head"><span>(03)</span><h3>Data Science &amp; ML</h3></div>
+          <div class="service-body">
+            <p>I explore how machine learning and large language models can solve real problems, building retrieval pipelines, evaluation workflows, and data-driven tools.</p>
+            <ol class="tool-list">
+              <li><span class="mono">01</span>Python, LangChain</li>
+              <li><span class="mono">02</span>OpenAI API, Pinecone</li>
+              <li><span class="mono">03</span>Streamlit, Celery, Redis</li>
+            </ol>
+          </div>
+        </article>
+        <div class="service-gap" aria-hidden="true"></div>
+
+        <!-- Card 04: Problem Solving -->
+        <article class="service-card" style="--i:3">
+          <div class="service-head"><span>(04)</span><h3>Problem Solving</h3></div>
+          <div class="service-body">
+            <!-- Competitive programming profiles.
+                 Colour follows the rating (script.js section 14).
+                 Codeforces updates live; update the AtCoder rating + kyu by hand. -->
+            <div class="cp-links">
+              <a class="cp-link" href="https://codeforces.com/profile/AK--I--RA" target="_blank" rel="noopener" data-site="codeforces" style="--rank:#c77dff">
+                <svg class="cp-logo" viewBox="0 0 24 24" aria-hidden="true"><rect x="1" y="9" width="6" height="13" rx="1.5" fill="#f7c843"/><rect x="9" y="3" width="6" height="19" rx="1.5" fill="#1f8acb"/><rect x="17" y="7" width="6" height="15" rx="1.5" fill="#e83b3b"/></svg>
+                <span class="cp-site">Codeforces</span><span class="cp-rating" id="cfRating">2090</span><span class="cp-rank" id="cfRank">Candidate Master</span><span aria-hidden="true">↗</span>
+              </a>
+              <a class="cp-link" href="https://atcoder.jp/users/AKIRAAA" target="_blank" rel="noopener" data-site="atcoder" style="--rank:#9a9a9a">
+                <img class="cp-logo cp-logo-ac" src="assets/atcoder-mark.png" alt="" width="120" height="152">
+                <span class="cp-site">AtCoder</span><span class="cp-rating">291</span><span class="cp-rank">9 Kyu</span><span aria-hidden="true">↗</span>
+              </a>
+            </div>
+            <p>Years of competitive programming shaped how I think: breaking problems down, optimizing for efficiency, and writing code that holds up under pressure.</p>
+            <ol class="tool-list">
+              <li><span class="mono">01</span>C++</li>
+              <li><span class="mono">02</span>Data Structures</li>
+              <li><span class="mono">03</span>Algorithms</li>
+            </ol>
+          </div>
+        </article>
+        <div class="service-gap" aria-hidden="true"></div>
+      </div>
+    </section>
+
+    <!-- ===== 4b. WORKS =====
+         Project cards on the right; a sticky counter on the left rolls to
+         the project in view. To add a project: copy one <a class="work">
+         block and add a digit to #counterCol. --pos sets which part of
+         the blurred background photo shows. -->
+    <section id="works" class="section">
+      <h2 class="section-heading" data-split="chars">Selected Works <em>/</em></h2>
+      <div class="section-intro">
+        <span class="mono label">(Projects)</span>
+        <p data-split="words">Thoughtfully crafted digital experiences that blend utility and aesthetics into something functional, memorable, and refined.</p>
+      </div>
+
+      <div class="works-grid">
+        <div class="works-counter" aria-hidden="true">
+          <span>0</span>
+          <span class="counter-window"><span class="counter-col" id="counterCol"><span>1</span><span>2</span><span>3</span><span>4</span><span>5</span></span></span>
+        </div>
+
+        <div class="works-list">
+          <a class="work" href="https://github.com/AK-I-RA/AI-Document-Intelligence" target="_blank" rel="noopener">
+            <div class="work-tile" style="--pos: 30% 40%">
+              <div class="work-window" aria-hidden="true">
+                <div class="work-bar"><span>DOCUMIND</span><span>GITHUB <i></i></span></div>
+                <div class="work-screen"><span class="work-screen-title">Docu<br>Mind</span><span class="work-screen-tech">Python · Pinecone · Ollama · Celery · Streamlit</span></div>
+              </div>
+            </div>
+            <div class="work-info">
+              <div>
+                <p class="work-sub">RAG Q&amp;A over PDFs, cited to the page</p>
+                <h3>DocuMind</h3>
+              </div>
+              <div class="work-pills"><span class="pill-outline">AI &amp; Data</span><span class="pill-solid">2026</span></div>
+            </div>
+          </a>
+
+          <a class="work" href="https://github.com/AK-I-RA/Book-Library" target="_blank" rel="noopener">
+            <div class="work-tile" style="--pos: 70% 30%">
+              <div class="work-window" aria-hidden="true">
+                <div class="work-bar"><span>SHELF</span><span>GITHUB <i></i></span></div>
+                <div class="work-screen"><span class="work-screen-title">Book<br>Library</span><span class="work-screen-tech">JavaScript · HTML · CSS</span></div>
+              </div>
+            </div>
+            <div class="work-info">
+              <div>
+                <p class="work-sub">Personal Reading Tracker</p>
+                <h3>Book Library</h3>
+              </div>
+              <div class="work-pills"><span class="pill-outline">Web App</span><span class="pill-solid">2021</span></div>
+            </div>
+          </a>
+
+          <a class="work" href="https://github.com/AK-I-RA/Helicopter--Game" target="_blank" rel="noopener">
+            <div class="work-tile" style="--pos: 50% 80%">
+              <div class="work-window" aria-hidden="true">
+                <div class="work-bar"><span>HELI</span><span>GITHUB <i></i></span></div>
+                <div class="work-screen"><span class="work-screen-title">Helicopter<br>Game</span><span class="work-screen-tech">C++</span></div>
+              </div>
+            </div>
+            <div class="work-info">
+              <div>
+                <p class="work-sub">C++ Arcade Game</p>
+                <h3>Helicopter Game</h3>
+              </div>
+              <div class="work-pills"><span class="pill-outline">Game Dev</span><span class="pill-solid">2021</span></div>
+            </div>
+          </a>
+
+          <a class="work" href="https://github.com/AK-I-RA/Image-Editor" target="_blank" rel="noopener">
+            <div class="work-tile" style="--pos: 20% 70%">
+              <div class="work-window" aria-hidden="true">
+                <div class="work-bar"><span>EDIT</span><span>GITHUB <i></i></span></div>
+                <div class="work-screen"><span class="work-screen-title">Image<br>Editor</span><span class="work-screen-tech">HTML · CSS · JavaScript</span></div>
+              </div>
+            </div>
+            <div class="work-info">
+              <div>
+                <p class="work-sub">Browser Image Editing Tool</p>
+                <h3>Image Editor</h3>
+              </div>
+              <div class="work-pills"><span class="pill-outline">Web App</span><span class="pill-solid">2021</span></div>
+            </div>
+          </a>
+
+          <a class="work" href="https://github.com/AK-I-RA/Live-code-editor" target="_blank" rel="noopener">
+            <div class="work-tile" style="--pos: 85% 55%">
+              <div class="work-window" aria-hidden="true">
+                <div class="work-bar"><span>LIVE</span><span>GITHUB <i></i></span></div>
+                <div class="work-screen"><span class="work-screen-title">Live Code<br>Editor</span><span class="work-screen-tech">HTML · CSS · JavaScript</span></div>
+              </div>
+            </div>
+            <div class="work-info">
+              <div>
+                <p class="work-sub">Real-Time Code Playground</p>
+                <h3>Live Code Editor</h3>
+              </div>
+              <div class="work-pills"><span class="pill-outline">Dev Tool</span><span class="pill-solid">2021</span></div>
+            </div>
+          </a>
+        </div>
+      </div>
+    </section>
+
+    <!-- ===== 4c. SKILLS ===== -->
+    <section id="skills" class="section skills">
+      <p class="skills-words" data-split="chars">Developer<br>Designer<br>Creator/</p>
+
+      <div class="skills-panel">
+        <h2 class="skills-title" data-split="chars">Skills</h2>
+        <div class="skills-cols">
+          <div class="skills-col">
+            <h3>Languages &amp; Tools</h3>
+            <ul class="mono-list">
+              <li>Python</li><li>SQL</li><li>C++</li><li>Java</li><li>TypeScript</li>
+              <li>JavaScript</li><li>Git</li><li>Postman</li><li>Docker</li><li>Firebase</li>
+            </ul>
+          </div>
+          <div class="skills-col">
+            <h3>Frameworks &amp; Libraries</h3>
+            <ul class="mono-list">
+              <li>React</li><li>Node.js</li><li>Express.js</li><li>Flask</li><li>Bootstrap</li>
+              <li>jQuery</li><li>Tailwind CSS</li><li>Framer Motion</li><li>GSAP</li>
+            </ul>
+          </div>
+          <div class="skills-col">
+            <h3>Core CS Concepts</h3>
+            <ul class="mono-list">
+              <li>DSA</li><li>DBMS</li><li>OOP</li><li>Operating Systems</li><li>System Design</li>
+            </ul>
           </div>
         </div>
       </div>
     </section>
 
-    <!-- ===== Services (full-screen page below hero) ===== -->
-    <section id="services" class="page second-page part" data-effect="slide-left">
-      <div class="page-inner">
-        <div class="ankit-next-inner">
-          <h1 class="ankit-next-title">WHAT I DO <span class="slash">/</span></h1>
-          <p class="ankit-next-sub">(SERVICES)</p>
-          <p class="ankit-next-text">
-            I specialize in building full-stack web 
-            applications that are fast, reliable, and user-friendly.
-            With a solid foundation in both frontend and backend technologies, I help bring ideas to life
-            whether it’s for a business, a startup, or a product team.
-          </p>
-        </div>
-        <hr class="thin-line">
-        <div class="service-item">
-          <h1 class="service-number">(01)</h1>
-          <p class="FSD">Full-Stack Development</p>
-          <p class="Define_FSD">
-            From frontend interactions to backend APIs, I build complete web solutions.
-            I work with modern stacks to deliver apps that are scalable, maintainable,
-            and ready for real-world users.
-          </p>
-          <ul class="FSD-Key_points">
-            <li><span class="number">01</span> React, Node.js, Express.js</li>
-            <hr class="thin-line_01">
-            <li><span class="number">02</span> REST APIs, Firebase, Docker</li>
-            <hr class="thin-line_02">
-            <li><span class="number">03</span> Git, GitHub, Postman</li>
-          </ul>
+    <!-- ===== 4d. ABOUT ===== -->
+    <section id="about" class="section about">
+      <div class="about-photo" data-anim="photo">
+        <img src="assets/ankit-photo.webp" alt="A sunlit corner of my room, with a vintage world map on the wall" loading="lazy" width="480" height="600">
+      </div>
+      <div class="about-text">
+        <p class="about-lead" data-split="words">I'm a developer who thinks in systems and problems, turning ideas into reliable, data-driven products.</p>
+        <div class="about-row">
+          <span class="mono label">(About Me)</span>
+          <div class="about-body">
+            <p>I'm a competitive programmer currently working in data science, with a strong pull toward machine learning, LLMs, and AI. I enjoy solving challenging problems, building data-driven solutions, and continuously learning new technologies.</p>
+            <p>Whether I'm shipping a full-stack feature or wiring up a retrieval pipeline, my approach stays the same: understand the problem properly, build something reliable, and keep it clean enough to build on next.</p>
+          </div>
         </div>
       </div>
     </section>
 
-    <!-- ===== Frontend / UI/UX (02) ===== -->
-    <section id="frontend_02" class="page fixed-page scroll-up part" data-effect="rotate">
-      <div class="page-inner">
-        <div class="service-item_02">
-          <h1 class="service-number_02">(02)</h1>
-          <p class="frontend">UI/UX & Frontend</p>
-          <p class="Define_frontend">
-            Design is more than looks — it’s about clarity and connection.
-            I design and develop clean, responsive interfaces that feel intuitive across devices.
-            My focus is on clarity, accessibility, and seamless user experiences.
-          </p>
-          <ul class="Frontend-Key_points">
-            <li><span class="number">01</span> NextJs, TailwindCSS, GSAP</li>
-            <hr class="thin-line_01">
-            <li><span class="number">02</span> Figma to Code</li>
-            <hr class="thin-line_02">
-          </ul>
-        </div>
-      </div>
-    </section>
   </main>
-  <script src="script.js"></script>
+
+  <!-- =================================================================
+       5. CONTACT
+       Separate card on the light page, revealed as the content sheet
+       lifts away. The form opens the visitor's email app (no backend).
+       ================================================================= -->
+  <section id="contact" class="contact">
+    <div class="contact-card" id="contactCard">
+      <h2 class="contact-heading" data-split="chars">Let's Make<br>It Happen</h2>
+
+      <form class="form-card" id="contactForm" novalidate>
+        <h3>Have a project in mind?</h3>
+        <label class="sr-only" for="name">Your name</label>
+        <input type="text" id="name" name="name" placeholder="Your name" autocomplete="name" required>
+        <label class="sr-only" for="email">Your email address</label>
+        <input type="email" id="email" name="email" placeholder="Your email address" autocomplete="email" required>
+        <label class="sr-only" for="message">Tell me about your business or project</label>
+        <textarea id="message" name="message" rows="5" placeholder="Tell me about your business or project" required></textarea>
+        <button type="submit" class="form-submit">Get a quote</button>
+        <p class="form-note" id="formNote" role="status" aria-live="polite"></p>
+      </form>
+    </div>
+  </section>
+
+  <!-- =================================================================
+       6. FOOTER
+       Menu, socials, live IST clock and back-to-top button.
+       ================================================================= -->
+  <footer class="site-footer">
+    <div class="footer-col footer-menu">
+      <h4>Menu</h4>
+      <nav aria-label="Footer">
+        <a href="#hero" class="roll" data-text="Home"><span>Home</span></a>
+        <a href="#services" class="roll" data-text="Services"><span>Services</span></a>
+        <a href="#works" class="roll" data-text="Works"><span>Works</span></a>
+        <a href="#about" class="roll" data-text="About"><span>About</span></a>
+        <a href="#contact" class="roll" data-text="Contact"><span>Contact</span></a>
+      </nav>
+    </div>
+    <div class="footer-col footer-socials">
+      <h4>Socials</h4>
+      <nav aria-label="Socials">
+        <a href="https://github.com/AK-I-RA" target="_blank" rel="noopener" class="roll" data-text="GitHub"><span>GitHub</span></a>
+        <a href="mailto:ankitrawat7895@gmail.com" class="roll" data-text="Email"><span>Email</span></a>
+      </nav>
+    </div>
+    <div class="footer-time">
+      <h4>Local time</h4>
+      <span class="mono-plain" id="localTime">--:--:--, IST</span>
+    </div>
+    <a href="#hero" class="to-top" aria-label="Back to top">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 19V5M5 12l7-7 7 7"/></svg>
+    </a>
+  </footer>
+
+  <!-- =================================================================
+       7. CUSTOM CURSOR + SCRIPTS
+       ================================================================= -->
+  <!-- "View" circle that follows the mouse over project tiles -->
+  <div class="cursor" id="cursor" aria-hidden="true"><span class="mono">View ↗</span></div>
+
+  <!-- Libraries: GSAP + ScrollTrigger (scroll animations), Lenis (smooth scroll) -->
+  <script defer src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
+  <script defer src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/ScrollTrigger.min.js"></script>
+  <script defer src="https://cdn.jsdelivr.net/npm/lenis@1.1.14/dist/lenis.min.js"></script>
+  <script defer src="script.js?v=15"></script>
 </body>
 </html>
