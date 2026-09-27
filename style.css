@@ -719,7 +719,7 @@ input, textarea { font: inherit; color: inherit; }
   color: var(--on-dark);
 }
 .work-pills { display: flex; gap: 6px; flex-shrink: 0; margin-bottom: 6px; }
-.work-pills span {
+.work-pills > * {
   padding: 5px 13px;
   border-radius: 999px;
   font-size: clamp(0.72rem, 0.9vw, 0.9rem);
@@ -728,6 +728,92 @@ input, textarea { font: inherit; color: inherit; }
 }
 .pill-outline { border: 1px solid var(--on-dark-soft); color: var(--on-dark); }
 .pill-solid { background: var(--on-dark-soft); color: var(--ink); }
+a.pill-outline { transition: background 0.3s ease, color 0.3s ease; }
+a.pill-outline:hover { background: var(--on-dark); color: var(--ink); }
+
+/* ----- Live project card (.work--live) -----
+   The deployed app runs inside the browser window, over a colourful
+   backdrop. script.js (section 12) loads the iframe near the viewport
+   and sets --s: the app is laid out at a desktop width and scaled down
+   to fit, like a live product screenshot. Clicking the card opens the
+   app in a new tab (.work-link).
+     .is-loaded   app has loaded → fade it in over the placeholder */
+.work--live .work-tile { aspect-ratio: 16 / 12; }
+
+/* Backdrop: the photo in colour, plus a slowly drifting colour glow */
+.work--live .work-tile::before {
+  filter: blur(12px) saturate(1.35) brightness(0.8);
+}
+.work--live .work-tile::after {
+  content: '';
+  position: absolute;
+  inset: -20%;
+  z-index: -1;
+  background:
+    radial-gradient(circle at 18% 22%, rgba(124, 92, 255, 0.55), transparent 42%),
+    radial-gradient(circle at 85% 18%, rgba(255, 122, 89, 0.45), transparent 40%),
+    radial-gradient(circle at 70% 88%, rgba(46, 196, 182, 0.45), transparent 45%);
+  mix-blend-mode: screen;
+  animation: live-glow 14s ease-in-out infinite alternate;
+}
+@keyframes live-glow {
+  to { transform: translate(4%, -3%) rotate(8deg) scale(1.08); }
+}
+
+/* Taller window with a gradient hairline, so more of the app shows */
+.work--live .work-window {
+  top: 11%;
+  height: calc(89% + 14px); /* +14px covers the hover lift */
+  display: flex;
+  flex-direction: column;
+  box-shadow: 0 0 0 1px rgba(255, 255, 255, 0.08), 0 -10px 70px rgba(0, 0, 0, 0.5), 0 0 90px rgba(124, 92, 255, 0.25);
+}
+.work--live .work-bar { flex-shrink: 0; }
+
+/* "LIVE DEMO ↗" label in the bar, with a pulsing green dot */
+.work-live-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  letter-spacing: 0.1em;
+  transition: color 0.3s ease;
+}
+.work-live-link::before {
+  content: '';
+  width: 7px; height: 7px;
+  border-radius: 50%;
+  background: #3fbf5f;
+  animation: live-pulse 2s ease-out infinite;
+}
+.work--live:hover .work-live-link { color: #7fdc97; }
+@keyframes live-pulse {
+  from { box-shadow: 0 0 0 0 rgba(63, 191, 95, 0.6); }
+  to   { box-shadow: 0 0 0 7px rgba(63, 191, 95, 0); }
+}
+
+/* Screen area: placeholder underneath, scaled app on top */
+.work-live { position: relative; flex: 1; overflow: hidden; }
+.work-live .work-screen { position: absolute; inset: 0; height: auto; }
+.work-live-frame {
+  position: absolute;
+  top: 0; left: 0;
+  width: calc(100% / var(--s, 1));
+  height: calc(100% / var(--s, 1));
+  transform: scale(var(--s, 1));
+  transform-origin: 0 0;
+  border: 0;
+  background: #fff;
+  opacity: 0;
+  transition: opacity 0.6s ease;
+  pointer-events: none; /* preview only: clicks go to the card link */
+}
+.work--live.is-loaded .work-live-frame { opacity: 1; }
+
+/* Whole-card link: an invisible layer over the card that opens the app.
+   The GitHub pill sits above it so it stays its own link. */
+.work--live { position: relative; }
+.work-link { position: absolute; inset: 0; z-index: 2; border-radius: 6px; }
+.work--live .work-pills a { position: relative; z-index: 3; }
 
 
 /* =====================================================================
@@ -1034,6 +1120,9 @@ input, textarea { font: inherit; color: inherit; }
   .skills-cols { grid-template-columns: repeat(2, 1fr); }
   .work-info { flex-direction: column; align-items: flex-start; }
   .work-window { left: 6%; right: 6%; top: 30%; }
+  .work--live .work-tile { aspect-ratio: 3 / 4; }   /* phone-shaped preview */
+  .work--live .work-window { left: 5%; right: 5%; top: 7%; height: calc(93% + 14px); }
+  .work--live .work-pills { flex-wrap: wrap; }
   .about-row { flex-direction: column; }
   .footer-menu, .footer-socials { grid-column: 1 / -1; }
   .footer-time { grid-column: 1 / span 8; grid-row: auto; margin-top: 0; }

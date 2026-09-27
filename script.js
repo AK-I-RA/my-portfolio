@@ -21,10 +21,11 @@
      09. In-page anchor navigation
      10. Services: align stacked card heights
      11. Works: sticky project counter
-     12. Custom "View" cursor
-     13. Contact form (mailto)
-     14. Competitive programming badges
-     15. Footer: live IST clock
+     12. Works: live project preview
+     13. Custom "View" cursor
+     14. Contact form (mailto)
+     15. Competitive programming badges
+     16. Footer: live IST clock
    ===================================================================== */
 
 // Tells the inline script in index.html that this file loaded, so it
@@ -393,16 +394,70 @@ document.addEventListener('DOMContentLoaded', () => {
 
 
   /* ===================================================================
-     12. CUSTOM "VIEW" CURSOR
+     12. WORKS: LIVE PROJECT PREVIEW
+     Cards marked .work--live run the deployed app in an iframe inside
+     the card's browser window.
+       - Lazy: the app only starts loading when the card comes within
+         ~one screen of the viewport, so it never slows the initial load.
+       - Scaled: on wider cards the app is laid out at LIVE_WIDTH and
+         shrunk to fit (via the --s CSS variable), so visitors see the
+         desktop version as a product preview. On narrow cards it runs at
+         real size, which shows the app's own mobile layout.
+     The preview is display-only; clicking the card opens the app in a
+     new tab through the card's .work-link (see index.html).
+     =================================================================== */
+  const LIVE_WIDTH = 960;   // desktop width the app is laid out at before scaling
+  document.querySelectorAll('.work--live').forEach((card) => {
+    const frame = card.querySelector('.work-live-frame');
+    const screen = card.querySelector('.work-live');
+    if (!frame || !screen || !frame.dataset.src) return;
+
+    // Fit: shrink the app to the window width (never enlarge it)
+    const fit = () => {
+      const w = screen.clientWidth;
+      const s = w >= 560 ? Math.min(1, w / LIVE_WIDTH) : 1;
+      card.style.setProperty('--s', s.toFixed(4));
+    };
+    fit();
+    if ('ResizeObserver' in window) new ResizeObserver(fit).observe(screen);
+    else window.addEventListener('resize', fit);
+
+    // Load the app once, when the card gets close to the viewport
+    const load = () => {
+      if (frame.getAttribute('src')) return;
+      frame.addEventListener('load', () => card.classList.add('is-loaded'), { once: true });
+      frame.src = frame.dataset.src;
+    };
+    if ('IntersectionObserver' in window) {
+      const io = new IntersectionObserver((entries) => {
+        if (entries.some((entry) => entry.isIntersecting)) { load(); io.disconnect(); }
+      }, { rootMargin: '100% 0px' });
+      io.observe(card);
+    } else {
+      load();
+    }
+  });
+
+
+  /* ===================================================================
+     13. CUSTOM "VIEW" CURSOR
      A circle that trails the mouse and appears over project tiles.
      Desktop only (needs a real mouse).
      =================================================================== */
   const cursor = document.getElementById('cursor');
   if (cursor && canHover && !reduceMotion) {
+    // True when the pointer is over a project tile. On live cards the
+    // invisible .work-link layer sits on top, so check the tile's box instead.
+    const overTile = (e) => {
+      if (e.target.closest('.work-tile')) return true;
+      if (!e.target.classList.contains('work-link')) return false;
+      const r = e.target.parentElement.querySelector('.work-tile').getBoundingClientRect();
+      return e.clientX >= r.left && e.clientX <= r.right && e.clientY >= r.top && e.clientY <= r.bottom;
+    };
     let x = -200, y = -200, cx = -200, cy = -200; // target (x, y) and current (cx, cy)
     window.addEventListener('mousemove', (e) => {
       x = e.clientX; y = e.clientY;
-      cursor.classList.toggle('on', !!e.target.closest('.work-tile'));
+      cursor.classList.toggle('on', overTile(e));
     });
     // Each frame, move 18% of the remaining distance → smooth trailing motion
     const follow = () => {
@@ -416,7 +471,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
 
   /* ===================================================================
-     13. CONTACT FORM (MAILTO, NO BACKEND)
+     14. CONTACT FORM (MAILTO, NO BACKEND)
      Checks the fields are filled in, then opens the visitor's email app
      with the message pre-written.
      =================================================================== */
@@ -445,7 +500,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
 
   /* ===================================================================
-     14. COMPETITIVE PROGRAMMING BADGES
+     15. COMPETITIVE PROGRAMMING BADGES
      =================================================================== */
 
   // Rating band colours per site: [minimum rating, colour], highest first.
@@ -484,7 +539,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
 
   /* ===================================================================
-     15. FOOTER: LIVE IST CLOCK
+     16. FOOTER: LIVE IST CLOCK
      =================================================================== */
   const timeEl = document.getElementById('localTime');
   if (timeEl) {
