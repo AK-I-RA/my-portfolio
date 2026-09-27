@@ -19,7 +19,7 @@
          4d. About    (#about)
     5. Contact (#contact)     revealed as the content sheet lifts away
     6. Footer
-    7. Custom cursor + scripts
+    7. Live demo viewer, custom cursor + scripts
 
   Animation attributes (handled by script.js + style.css section 04):
     data-split="words|chars"  text slides in word by word / letter by letter
@@ -41,7 +41,7 @@
 <link href="https://fonts.googleapis.com/css2?family=Inter+Tight:wght@500;600;700&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@300;400;500;700&display=swap" rel="stylesheet">
 
 <!-- ===== Styles (bump ?v= after editing so browsers skip the cached copy) ===== -->
-<link rel="stylesheet" href="style.css?v=15">
+<link rel="stylesheet" href="style.css?v=16">
 
 <!-- ===== Animation safety net ===== -->
 <script>
@@ -229,7 +229,16 @@
          Project cards on the right; a sticky counter on the left rolls to
          the project in view. To add a project: copy one <a class="work">
          block and add a digit to #counterCol. --pos sets which part of
-         the blurred background photo shows. -->
+         the blurred background photo shows.
+
+         Live demos: give a card these attributes and clicking it opens the
+         deployed app inside the demo viewer (section 7) instead of leaving
+         the page. href stays as the fallback (new tab / no JavaScript).
+           data-embed  URL loaded in the viewer (Streamlit: add ?embed=true)
+           data-repo   GitHub link shown in the viewer's toolbar (optional)
+           data-title  name shown in the viewer's toolbar
+         The deployed site must allow being framed (no X-Frame-Options:
+         DENY / CSP frame-ancestors); otherwise just link it with href. -->
     <section id="works" class="section">
       <h2 class="section-heading" data-split="chars">Selected Works <em>/</em></h2>
       <div class="section-intro">
@@ -244,7 +253,10 @@
         </div>
 
         <div class="works-list">
-          <a class="work" href="https://ai-document-intelligence-jyvkmfhhbkserfynzuwrkq.streamlit.app/" target="_blank" rel="noopener">
+          <a class="work" href="https://ai-document-intelligence-jyvkmfhhbkserfynzuwrkq.streamlit.app/" target="_blank" rel="noopener"
+             data-embed="https://ai-document-intelligence-jyvkmfhhbkserfynzuwrkq.streamlit.app/?embed=true"
+             data-repo="https://github.com/AK-I-RA/AI-Document-Intelligence"
+             data-title="DocuMind">
             <div class="work-tile" style="--pos: 30% 40%">
               <div class="work-window" aria-hidden="true">
                 <div class="work-bar"><span>DOCUMIND</span><span>LIVE DEMO <i></i></span></div>
@@ -256,7 +268,7 @@
                 <p class="work-sub">RAG Q&amp;A over PDFs, cited to the page</p>
                 <h3>DocuMind</h3>
               </div>
-              <div class="work-pills"><span class="pill-outline">AI &amp; Data</span><span class="pill-solid">2026</span></div>
+              <div class="work-pills"><span class="pill-live">Live</span><span class="pill-outline">AI &amp; Data</span><span class="pill-solid">2026</span></div>
             </div>
           </a>
 
@@ -432,8 +444,36 @@
   </footer>
 
   <!-- =================================================================
-       7. CUSTOM CURSOR + SCRIPTS
+       7. LIVE DEMO VIEWER, CUSTOM CURSOR + SCRIPTS
        ================================================================= -->
+  <!-- Live demo viewer: a browser-style window that loads a project's
+       deployed app in an iframe (opened by script.js section 12) -->
+  <div class="demo" id="demo" role="dialog" aria-modal="true" aria-labelledby="demoTitle" aria-hidden="true" data-lenis-prevent>
+    <div class="demo-backdrop" data-demo-close></div>
+    <div class="demo-window">
+      <div class="demo-bar">
+        <span class="demo-dots" aria-hidden="true"><i></i><i></i><i></i></span>
+        <span class="demo-title" id="demoTitle">Live demo</span>
+        <div class="demo-actions">
+          <a class="demo-btn" id="demoOpen" href="#" target="_blank" rel="noopener">New tab ↗</a>
+          <a class="demo-btn" id="demoRepo" href="#" target="_blank" rel="noopener">GitHub ↗</a>
+          <button class="demo-close" id="demoClose" type="button" aria-label="Close demo" data-demo-close>
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M6 6l12 12M18 6L6 18"/></svg>
+          </button>
+        </div>
+      </div>
+      <div class="demo-stage">
+        <!-- Shown until the app loads (free-tier apps can take a while to wake up) -->
+        <div class="demo-loading">
+          <span class="demo-spinner" aria-hidden="true"></span>
+          <p>Loading live demo…</p>
+          <p class="demo-hint">Hosted on a free tier, so it may take up to a minute to wake up. Taking too long? <a id="demoFallback" href="#" target="_blank" rel="noopener">Open it in a new tab ↗</a></p>
+        </div>
+        <iframe class="demo-frame" id="demoFrame" title="Live demo" allow="clipboard-write; fullscreen"></iframe>
+      </div>
+    </div>
+  </div>
+
   <!-- "View" circle that follows the mouse over project tiles -->
   <div class="cursor" id="cursor" aria-hidden="true"><span class="mono">View ↗</span></div>
 
@@ -441,6 +481,6 @@
   <script defer src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
   <script defer src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/ScrollTrigger.min.js"></script>
   <script defer src="https://cdn.jsdelivr.net/npm/lenis@1.1.14/dist/lenis.min.js"></script>
-  <script defer src="script.js?v=15"></script>
+  <script defer src="script.js?v=16"></script>
 </body>
 </html>

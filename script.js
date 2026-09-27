@@ -21,10 +21,11 @@
      09. In-page anchor navigation
      10. Services: align stacked card heights
      11. Works: sticky project counter
-     12. Custom "View" cursor
-     13. Contact form (mailto)
-     14. Competitive programming badges
-     15. Footer: live IST clock
+     12. Works: live demo viewer
+     13. Custom "View" cursor
+     14. Contact form (mailto)
+     15. Competitive programming badges
+     16. Footer: live IST clock
    ===================================================================== */
 
 // Tells the inline script in index.html that this file loaded, so it
@@ -393,16 +394,97 @@ document.addEventListener('DOMContentLoaded', () => {
 
 
   /* ===================================================================
-     12. CUSTOM "VIEW" CURSOR
+     12. WORKS: LIVE DEMO VIEWER
+     Project cards with a data-embed attribute open their deployed app
+     inside a browser-style window on this page instead of navigating
+     away. The iframe is only loaded when the viewer opens and is emptied
+     again on close, so a demo never slows down the portfolio itself.
+     Ctrl/Cmd/Shift/middle-click still follow the card's href as usual.
+     =================================================================== */
+  const demo = document.getElementById('demo');
+  if (demo) {
+    const demoFrame = document.getElementById('demoFrame');
+    const demoTitle = document.getElementById('demoTitle');
+    const demoOpen = document.getElementById('demoOpen');
+    const demoFallback = document.getElementById('demoFallback');
+    const demoRepo = document.getElementById('demoRepo');
+    const demoClose = document.getElementById('demoClose');
+    let lastCard = null;   // card that opened the viewer, to return focus on close
+    let unloadTimer = 0;
+
+    const isOpen = () => demo.classList.contains('is-open');
+
+    /** Fills the viewer from a card's data attributes and shows it. */
+    const openDemo = (card) => {
+      clearTimeout(unloadTimer);
+      lastCard = card;
+      const title = card.dataset.title || 'Live demo';
+      demoTitle.textContent = title;
+      demoFrame.title = `${title} — live demo`;
+      demoOpen.href = demoFallback.href = card.href;
+      demoRepo.hidden = !card.dataset.repo;
+      if (card.dataset.repo) demoRepo.href = card.dataset.repo;
+
+      demo.classList.remove('is-loaded');     // show the loading screen again
+      demoFrame.src = card.dataset.embed;
+
+      demo.classList.add('is-open');
+      demo.setAttribute('aria-hidden', 'false');
+      if (lenis) lenis.stop();                // freeze the page behind the viewer
+      root.style.overflow = 'hidden';
+      demoClose.focus();
+    };
+
+    /** Hides the viewer, unloads the app after the exit animation, restores the page. */
+    const closeDemo = () => {
+      if (!isOpen()) return;
+      demo.classList.remove('is-open');
+      demo.setAttribute('aria-hidden', 'true');
+      unloadTimer = setTimeout(() => { demoFrame.removeAttribute('src'); }, 500);
+      if (lenis) lenis.start();
+      root.style.overflow = '';
+      if (lastCard) lastCard.focus({ preventScroll: true });
+    };
+
+    // The iframe's load event means the app's page has arrived: fade it in
+    demoFrame.addEventListener('load', () => {
+      if (demoFrame.getAttribute('src')) demo.classList.add('is-loaded');
+    });
+
+    document.querySelectorAll('.work[data-embed]').forEach((card) => {
+      card.addEventListener('click', (e) => {
+        if (e.button !== 0 || e.metaKey || e.ctrlKey || e.shiftKey || e.altKey) return; // let "open in new tab" work
+        e.preventDefault();
+        openDemo(card);
+      });
+    });
+
+    // Close via the ✕ button, a click on the dimmed backdrop, or Escape
+    demo.querySelectorAll('[data-demo-close]').forEach((el) => el.addEventListener('click', closeDemo));
+    window.addEventListener('keydown', (e) => { if (e.key === 'Escape') closeDemo(); });
+
+    // Keep keyboard focus inside the viewer while it is open
+    document.addEventListener('focusin', (e) => {
+      if (isOpen() && !demo.contains(e.target)) demoClose.focus();
+    });
+  }
+
+
+  /* ===================================================================
+     13. CUSTOM "VIEW" CURSOR
      A circle that trails the mouse and appears over project tiles.
+     Tiles with a live demo show "Live demo" instead of "View".
      Desktop only (needs a real mouse).
      =================================================================== */
   const cursor = document.getElementById('cursor');
   if (cursor && canHover && !reduceMotion) {
+    const cursorLabel = cursor.querySelector('span');
     let x = -200, y = -200, cx = -200, cy = -200; // target (x, y) and current (cx, cy)
     window.addEventListener('mousemove', (e) => {
       x = e.clientX; y = e.clientY;
-      cursor.classList.toggle('on', !!e.target.closest('.work-tile'));
+      const tile = e.target.closest('.work-tile');
+      cursor.classList.toggle('on', !!tile);
+      if (tile) cursorLabel.textContent = tile.closest('.work[data-embed]') ? 'Live demo' : 'View ↗';
     });
     // Each frame, move 18% of the remaining distance → smooth trailing motion
     const follow = () => {
@@ -416,7 +498,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
 
   /* ===================================================================
-     13. CONTACT FORM (MAILTO, NO BACKEND)
+     14. CONTACT FORM (MAILTO, NO BACKEND)
      Checks the fields are filled in, then opens the visitor's email app
      with the message pre-written.
      =================================================================== */
@@ -445,7 +527,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
 
   /* ===================================================================
-     14. COMPETITIVE PROGRAMMING BADGES
+     15. COMPETITIVE PROGRAMMING BADGES
      =================================================================== */
 
   // Rating band colours per site: [minimum rating, colour], highest first.
@@ -484,7 +566,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
 
   /* ===================================================================
-     15. FOOTER: LIVE IST CLOCK
+     16. FOOTER: LIVE IST CLOCK
      =================================================================== */
   const timeEl = document.getElementById('localTime');
   if (timeEl) {
